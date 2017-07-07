@@ -1,0 +1,39 @@
+@import '~material-colors/dist/colors';
+
+.bg{
+	fill: $md-grey-100;
+}
+
+circle.dot{
+	fill: $md-pink-500;
+	pointer-events: none;
+}
+circle.selector{
+	fill: $md-white;
+	stroke: $md-white;
+	opacity: .5;
+	transition: opacity .3s ease-in-out;
+}
+circle.selector:hover{
+	opacity: .8;
+	transition: opacity .3s ease-in-out;
+}
+
+.car{
+	fill: $md-light-blue-500;
+	rx: 1px;
+	ry: 1px;
+	stroke: white;
+}
+.lane{
+	fill: $md-grey-300;
+	pointer-events: none;
+}
+.line{
+	fill: none;
+	stroke: $md-pink-500;
+	stroke-width: 2px;
+	stroke-dasharray: 4,4;
+	stroke-linecap: round;
+	pointer-events: none;
+}

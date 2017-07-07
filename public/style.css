@@ -1,0 +1,47 @@
+.styleMain__wheel___3Nt{
+	fill: none;
+	stroke: #999;
+	stroke-width: 4px;
+}
+
+.styleMain__cup___3O1{
+	transition: transform .01s linear;
+}
+
+.styleMain__cup___3O1 .styleMain__shell___346{
+	fill: #333;
+	rx: 1px;
+	ry: 1px;
+}
+
+.styleMain__cup___3O1 .styleMain__fill___3Dz{
+	fill: #bbb;
+	rx: 1px;
+	ry: 1px;
+	/*opacity: 0.;*/
+}
+
+.styleMain__cup___3O1 .styleMain__water___3vY{
+	fill: #E91E63;
+	opacity: .5;
+}
+
+.styleMain__spigot___39O{
+	stroke-width: 12px;
+	stroke:  #E91E63;
+}
+
+.styleMain__row___25W{
+	display: flex;
+}.stylePlot__dot___17w{
+	fill: red;
+}
+
+.stylePlot__plot___2TO{
+	position: relative;
+}
+
+.stylePlot__canvas___3kH{
+	position: absolute;
+}
+/*# sourceMappingURL=style.css.map*/
