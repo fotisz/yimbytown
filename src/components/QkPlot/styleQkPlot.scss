@@ -1,0 +1,18 @@
+@import '~material-colors/dist/colors';
+
+.bg{
+	fill: $md-grey-100;
+}
+
+circle.dot{
+	fill: $md-pink-800;
+	pointer-events: none;
+}
+
+.line{
+	fill: none;
+	stroke: $md-pink-800;
+	stroke-width: 4px;
+	stroke-linecap: round;
+	pointer-events: none;
+}

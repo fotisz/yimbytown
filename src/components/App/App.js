@@ -2,13 +2,15 @@
 import React, { Component, PureComponent } from "react";
 import style from "./styleApp.scss";
 import VkPlot from "components/VkPlot";
+import QkPlot from "components/QkPlot";
 import uniqueId from "lodash/uniqueId";
 import { VF, KJ } from "constants";
 import type { DotDatum } from "src/types";
 import memoize from "lodash/memoize";
 import { scaleLinear } from "d3-scale";
+import { interpolateBasis } from "d3-interpolate";
 
-const getScale = memoize((dots: Array<Dots>) => {
+const getScale = memoize((dots: Array<DotDatum>) => {
 	return scaleLinear().domain(dots.map(d => d.k)).range(dots.map(d => d.v));
 });
 
@@ -17,19 +19,16 @@ export default class App extends PureComponent {
 		dots: Array<DotDatum>
 	};
 	state = {
-		dots: [{ id: "a", k: 0, v: VF }, { id: "b", k: KJ, v: 0 }]
+		dots: [{ id: "a", k: 0, v: VF, q: 0 }, { id: "b", k: KJ, v: 0, q: 0 }]
 	};
 
 	deleteDot = (id: string) => {
-		if ((id == "a") | (id == "b")) return;
 		this.setState(({ dots }) => ({
 			dots: dots.filter(d => d.id !== id)
 		}));
 	};
 
 	updateDot = (id: string, k: number, v: number) => {
-		if (id == "a" || id == "b") return;
-		// let lastV = 0;
 		this.setState(({ dots }) => ({
 			dots: dots.map((d, i) => {
 				if (d.id !== id) return d;
@@ -38,7 +37,8 @@ export default class App extends PureComponent {
 				return {
 					id: d.id,
 					k,
-					v
+					v,
+					q: k * v
 				};
 			})
 			// .sort((a, b) => a.k - b.k)
@@ -47,7 +47,7 @@ export default class App extends PureComponent {
 
 	addDot = (id: string, k: number, v: number) => {
 		this.setState(({ dots }) => ({
-			dots: dots.concat({ id, k, v }).sort((a, b) => a.k - b.k)
+			dots: dots.concat({ id, k, v, q: k * v }).sort((a, b) => a.k - b.k)
 		}));
 	};
 
@@ -62,6 +62,7 @@ export default class App extends PureComponent {
 					updateDot={this.updateDot}
 					deleteDot={this.deleteDot}
 				/>
+				<QkPlot scale={scale} dots={this.state.dots} />
 			</div>
 		);
 	}
