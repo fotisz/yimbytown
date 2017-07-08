@@ -21,7 +21,7 @@ const pathMaker = line().x(d => x(d.k)).y(d => y(d.v));
 class Lane extends PureComponent {
 	componentDidMount() {
 		let last = 0;
-		let T = timer(elapsed => {
+		this.T = timer(elapsed => {
 			let δ = (elapsed - last) / 75;
 			this.setState(({ cars }) => {
 				return {
@@ -152,18 +152,23 @@ export default class VkPlot extends PureComponent {
 				ref={d => (this.svg = d)}
 				className={style.svg}
 				width={WIDTH + 2 * MAR}
-				height={HEIGHT + 2*MAR}
+				height={HEIGHT + 2 * MAR}
 			>
 				<g
 					onMouseUp={this.onMouseUp}
 					transform={`translate(${MAR},${MAR})`}
 					onMouseMove={this.onMouseMove}
 				>
-					<g
-						ref={d => (this.gBottom = d)}
-						transform={`translate(0,${HEIGHT})`}
-					/>
-					<g ref={d => (this.gLeft = d)} />
+					<g ref={d => (this.gBottom = d)} transform={`translate(0,${HEIGHT})`}>
+						<g transform={`translate(${WIDTH / 2},30)`}>
+							<text className={style.axisLabel}>density</text>
+						</g>
+					</g>
+					<g ref={d => (this.gLeft = d)}>
+						<g transform={`translate(-35,${HEIGHT / 2}) rotate(-90)`}>
+							<text className={style.axisLabel}>speed</text>
+						</g>
+					</g>
 					<rect
 						onMouseDown={this.onClick}
 						className={style.bg}

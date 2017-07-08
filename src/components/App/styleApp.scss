@@ -1,4 +1,17 @@
 @import '~material-colors/dist/colors';
+@import url('https://fonts.googleapis.com/css?family=Neuton|Work+Sans:400');
+
+body{
+	// font-family: 'Work Sans', sans-serif;
+	// font-family: 'Neuton', serif;
+
+	// font-family: Helvetica;
+}
+
+text{
+	font-family: "Work Sans";
+	font-size: 14px;
+}
 
 .bg{
 	fill: $md-grey-300;

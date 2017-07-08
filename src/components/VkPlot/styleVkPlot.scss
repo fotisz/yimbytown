@@ -45,3 +45,11 @@ circle.selector:hover{
 	pointer-events: none;
 	stroke: none;
 }
+
+.axisLabel{
+	font-size: 15px;
+	fill: black;
+	text-anchor: middle;
+	alignment-baseline: central;
+	// transform: rotate(-90deg);
+}
