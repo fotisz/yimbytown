@@ -1,21 +1,22 @@
 //@flow
 import React, { Component, PureComponent } from "react";
-import style from "./styleFunIdentity.scss";
+import style from "./styleFI.scss";
 import { pure } from "recompose";
 import { scaleLinear } from "d3-scale";
 import uniqueId from "lodash/uniqueId";
 import { timer } from "d3-timer";
 import range from "lodash/range";
+import map from "lodash/map";
 import { KJ, VF } from "constants";
 import type { DotDatum } from "src/types";
 import { line, curveCatmullRom } from "d3-shape";
 import { axisLeft, axisBottom } from "d3-axis";
 import { select } from "d3-selection";
 const WIDTH = 500;
-const HEIGHT = 40;
+const HEIGHT = 20;
 const x = scaleLinear().domain([0, KJ]).range([0, WIDTH]);
 const y = scaleLinear().domain([0, VF * 1.2]).range([HEIGHT, 0]);
-
+const KM = 100;
 class Road extends PureComponent {
 	render() {
 		return (
@@ -26,8 +27,8 @@ class Road extends PureComponent {
 						<rect
 							width="8"
 							height="4"
-							dx="-4"
-							dy="-2"
+							x="-4"
+							y="-2"
 							key={d.id}
 							className={style.car}
 							transform={`translate(${d.x},0)`}
@@ -45,15 +46,20 @@ export default class FunIdentity extends PureComponent {
 	startTimer = () => {
 		let last = 0;
 		this.timer = timer(elapsed => {
-			let δ = (elapsed - last) / 75;
+			const δ = (elapsed - last) / 75;
 			last = elapsed;
-			let cars = this.state.cars.map(d => ({
-				id: d.id,
-				x: d.x + δ * this.state.v
-			}));
-			if (cars[0].x > 100 / this.state.k)
-				cars.unshift({ id: uniqueId(), x: cars[0].x - 100 / this.state.k });
-			if (cars[cars.length - 1].x > WIDTH) cars.pop();
+			const scale = this.props.scale;
+			let numCars = this.state.cars.length;
+			let v;
+			const cars = map(this.state.cars, (d, i, k) => {
+				v = i < numCars-1 ? scale(KM / (k[i + 1].x - d.x)) : VF;
+				return {
+					id: d.id,
+					x: d.x + δ * v
+				};
+			}).filter(d => d.x < WIDTH);
+			if (cars[0].x > KM / this.state.k)
+				cars.unshift({ id: uniqueId(), x: cars[0].x - KM / this.state.k });
 			this.setState({ cars });
 		});
 	};
@@ -68,14 +74,12 @@ export default class FunIdentity extends PureComponent {
 	constructor(props) {
 		super(props);
 		let k = 5;
-		let v = 10;
-		let numCars = k * WIDTH / 100;
-		let cars = range(0, numCars).map(d => ({
+		let space = KM / k;
+		let cars = range(0, WIDTH / KM * k).map(d => ({
 			id: uniqueId(),
-			x: WIDTH * d / numCars
+			x: d * space
 		}));
 		this.state = {
-			v,
 			k,
 			cars
 		};

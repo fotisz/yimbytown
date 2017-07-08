@@ -53,3 +53,10 @@ circle.selector:hover{
 	alignment-baseline: central;
 	// transform: rotate(-90deg);
 }
+
+circle.signal{
+	// fill: $md-light-blue-500;
+	fill: none;
+	stroke-width: 1px;
+	stroke: $md-pink-500;
+}

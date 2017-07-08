@@ -2,7 +2,8 @@
 import React, { Component, PureComponent } from "react";
 import style from "./styleApp.scss";
 import VkPlot from "components/VkPlot";
-import QkPlot from "components/QkPlot";
+// import QkPlot from "components/QkPlot";
+import FundIdentity from "components/FI";
 import uniqueId from "lodash/uniqueId";
 import { VF, KJ } from "constants";
 import type { DotDatum } from "src/types";
@@ -61,6 +62,7 @@ export default class App extends PureComponent {
 					updateDot={this.updateDot}
 					deleteDot={this.deleteDot}
 				/>
+				<FundIdentity scale={scale} />
 			</div>
 		);
 	}

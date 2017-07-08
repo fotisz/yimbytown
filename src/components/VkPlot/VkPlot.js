@@ -9,8 +9,9 @@ import range from "lodash/range";
 import { KJ, VF } from "constants";
 import type { DotDatum } from "src/types";
 import { line, curveCatmullRom } from "d3-shape";
-import { axisLeft, axisBottom } from "d3-axis";
+import { axisLeft, axisBottom, axisTop } from "d3-axis";
 import { select } from "d3-selection";
+
 const WIDTH = 500;
 const HEIGHT = 300;
 const MAR = 40;
@@ -47,16 +48,16 @@ class Lane extends PureComponent {
 	render() {
 		return (
 			<g className={style.lane} transform={`translate(${x(this.props.k)},0)`}>
-				<rect className={style.road} height={HEIGHT} width="8" x="-4" />
+				<rect className={style.road} height={HEIGHT} width="8" />
 				{this.state.cars.map(d => (
 					<rect
 						key={d.id}
-						x="-2"
+						x="2"
 						y="-8"
 						width="4"
 						height="8"
 						className={style.car}
-						transform={`translate(0,${d.x})`}
+						transform={`translate(0,${d.x + 10})`}
 					/>
 				))}
 			</g>
@@ -65,7 +66,7 @@ class Lane extends PureComponent {
 }
 
 const Lanes = pure(({ dots, scale }) => {
-	let n = 30;
+	let n = 25;
 	return (
 		<g>
 			{range(0, KJ, KJ / n).map(k => <Lane k={k} v={scale(k)} key={k} />)}
@@ -142,7 +143,7 @@ export default class VkPlot extends PureComponent {
 	};
 
 	componentDidMount() {
-		select(this.gBottom).call(axisBottom().scale(x));
+		select(this.gTop).call(axisTop().scale(x));
 		select(this.gLeft).call(axisLeft().scale(y));
 	}
 
@@ -160,8 +161,8 @@ export default class VkPlot extends PureComponent {
 					</clipPath>
 				</defs>
 				<g transform={`translate(${MAR},${MAR})`}>
-					<g ref={d => (this.gBottom = d)} transform={`translate(0,${HEIGHT})`}>
-						<g transform={`translate(${WIDTH / 2},30)`}>
+					<g ref={d => (this.gTop = d)} transform={`translate(0,${0})`}>
+						<g transform={`translate(${WIDTH / 2},-30)`}>
 							<text className={style.axisLabel}>density</text>
 						</g>
 					</g>
