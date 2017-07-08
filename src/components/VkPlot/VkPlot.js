@@ -9,10 +9,11 @@ import range from "lodash/range";
 import { KJ, VF } from "constants";
 import type { DotDatum } from "src/types";
 import { line, curveCatmullRom } from "d3-shape";
-
+import { axisLeft, axisBottom } from "d3-axis";
+import { select } from "d3-selection";
 const WIDTH = 500;
 const HEIGHT = 300;
-const MAR = 20;
+const MAR = 40;
 const x = scaleLinear().domain([0, KJ]).range([0, WIDTH]);
 const y = scaleLinear().domain([0, VF * 1.2]).range([HEIGHT, 0]);
 const pathMaker = line().x(d => x(d.k)).y(d => y(d.v));
@@ -120,14 +121,12 @@ export default class VkPlot extends PureComponent {
 
 	onMouseMove = (e: MouseEvent) => {
 		if (!this.isDragging) return;
-		let { left, top } = this.g.getBoundingClientRect();
-		let k = x.invert(e.clientX - left);
-		let v = y.invert(e.clientY - top);
+		let { k, v } = this.getKV(e);
 		this.props.updateDot(this.selected, k, v);
 	};
 
 	getKV = (e: MouseEvent) => {
-		let { left, top } = this.g.getBoundingClientRect();
+		let { left, top } = this.rect.getBoundingClientRect();
 		return {
 			k: x.invert(e.clientX - left),
 			v: y.invert(e.clientY - top)
@@ -142,20 +141,35 @@ export default class VkPlot extends PureComponent {
 		this.props.updateDot(this.selected, k, v);
 	};
 
+	componentDidMount() {
+		select(this.gBottom).call(axisBottom().scale(x));
+		select(this.gLeft).call(axisLeft().scale(y));
+	}
+
 	render() {
 		return (
-			<svg className={style.svg} width={WIDTH + 2 * MAR} height={HEIGHT + MAR}>
+			<svg
+				ref={d => (this.svg = d)}
+				className={style.svg}
+				width={WIDTH + 2 * MAR}
+				height={HEIGHT + 2*MAR}
+			>
 				<g
-					onMouseMove={this.onMouseMove}
 					onMouseUp={this.onMouseUp}
-					ref={d => (this.g = d)}
-					transform={`translate(${MAR},${0})`}
+					transform={`translate(${MAR},${MAR})`}
+					onMouseMove={this.onMouseMove}
 				>
+					<g
+						ref={d => (this.gBottom = d)}
+						transform={`translate(0,${HEIGHT})`}
+					/>
+					<g ref={d => (this.gLeft = d)} />
 					<rect
 						onMouseDown={this.onClick}
 						className={style.bg}
 						width={WIDTH}
 						height={HEIGHT}
+						ref={d => (this.rect = d)}
 					/>
 					{<Lanes scale={this.props.scale} dots={this.props.dots} />}
 

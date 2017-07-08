@@ -41,7 +41,6 @@ export default class App extends PureComponent {
 					q: k * v
 				};
 			})
-			// .sort((a, b) => a.k - b.k)
 		}));
 	};
 
@@ -62,8 +61,11 @@ export default class App extends PureComponent {
 					updateDot={this.updateDot}
 					deleteDot={this.deleteDot}
 				/>
-				<QkPlot scale={scale} dots={this.state.dots} />
 			</div>
 		);
 	}
 }
+
+/*
+	<QkPlot scale={scale} dots={this.state.dots} />
+*/
