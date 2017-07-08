@@ -154,11 +154,12 @@ export default class VkPlot extends PureComponent {
 				width={WIDTH + 2 * MAR}
 				height={HEIGHT + 2 * MAR}
 			>
-				<g
-					onMouseUp={this.onMouseUp}
-					transform={`translate(${MAR},${MAR})`}
-					onMouseMove={this.onMouseMove}
-				>
+				<defs>
+					<clipPath id="hello">
+						<rect width={WIDTH} height={HEIGHT} />
+					</clipPath>
+				</defs>
+				<g transform={`translate(${MAR},${MAR})`}>
 					<g ref={d => (this.gBottom = d)} transform={`translate(0,${HEIGHT})`}>
 						<g transform={`translate(${WIDTH / 2},30)`}>
 							<text className={style.axisLabel}>density</text>
@@ -169,6 +170,13 @@ export default class VkPlot extends PureComponent {
 							<text className={style.axisLabel}>speed</text>
 						</g>
 					</g>
+				</g>
+				<g
+					clipPath="url(#hello)"
+					onMouseUp={this.onMouseUp}
+					transform={`translate(${MAR},${MAR})`}
+					onMouseMove={this.onMouseMove}
+				>
 					<rect
 						onMouseDown={this.onClick}
 						className={style.bg}
