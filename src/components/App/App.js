@@ -2,8 +2,8 @@
 import React, { Component, PureComponent } from "react";
 import style from "./styleApp.scss";
 import VkPlot from "components/VkPlot";
-// import QkPlot from "components/QkPlot";
-import FundIdentity from "components/FI";
+import QkPlot from "components/QkPlot";
+import FI from "components/FI";
 import uniqueId from "lodash/uniqueId";
 import { VF, KJ } from "constants";
 import type { DotDatum } from "src/types";
@@ -14,6 +14,8 @@ import { interpolateBasis } from "d3-interpolate";
 const getScale = memoize((dots: Array<DotDatum>) => {
 	return scaleLinear().domain(dots.map(d => d.k)).range(dots.map(d => d.v));
 });
+
+// export default FI;
 
 export default class App extends PureComponent {
 	state: {
@@ -62,12 +64,14 @@ export default class App extends PureComponent {
 					updateDot={this.updateDot}
 					deleteDot={this.deleteDot}
 				/>
-				<FundIdentity scale={scale} />
+				<QkPlot scale={scale} dots={this.state.dots} />
+				
 			</div>
 		);
 	}
 }
 
 /*
-	<QkPlot scale={scale} dots={this.state.dots} />
+				<FundIdentity scale={scale} />
+
 */
