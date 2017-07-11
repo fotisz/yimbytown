@@ -1,12 +1,22 @@
 @import '~material-colors/dist/colors';
-
-.car{
-	fill: $md-light-blue-500;
-	rx: 1px;
-	ry: 1px;
+.car {
+    fill: $md-light-blue-500;
+    rx: 1px;
+    ry: 1px;
 }
 
-.lane{
-	fill: $md-grey-300;
+.lane {
+    fill: $md-grey-300;
+    pointer-events: none;
+}
+
+.pool{
+	fill: $md-grey-600;
 	pointer-events: none;
+}
+
+.carExited {
+    fill: $md-blue-500;
+    rx: 1px;
+    ry: 1px;
 }

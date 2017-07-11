@@ -3,14 +3,17 @@ import React, { Component, PureComponent } from "react";
 import style from "./styleVkPlot.scss";
 import { pure } from "recompose";
 import { scaleLinear } from "d3-scale";
-import uniqueId from "lodash/uniqueId";
+import QkPlot from "components/QkPlot";
 import { timer } from "d3-timer";
-import range from "lodash/range";
 import { KJ, VF } from "constants";
+import uniqueId from "lodash/uniqueId";
+import range from "lodash/range";
+import memoize from "lodash/memoize";
 import type { DotDatum } from "src/types";
-import { line, curveCatmullRom } from "d3-shape";
+import { line } from "d3-shape";
 import { axisLeft, axisBottom, axisTop } from "d3-axis";
 import { select } from "d3-selection";
+import bind from "memoize-bind";
 
 const WIDTH = 500;
 const HEIGHT = 300;
@@ -18,20 +21,74 @@ const MAR = 40;
 const x = scaleLinear().domain([0, KJ]).range([0, WIDTH]);
 const y = scaleLinear().domain([0, VF * 1.2]).range([HEIGHT, 0]);
 const pathMaker = line().x(d => x(d.k)).y(d => y(d.v));
+const getScale = memoize((dots: Array<DotDatum>) => {
+	return scaleLinear().domain(dots.map(d => d.k)).range(dots.map(d => d.v));
+});
+
+export default class App extends PureComponent {
+	state: {
+		dots: Array<DotDatum>
+	};
+
+	state = {
+		dots: [{ id: "a", k: 0, v: VF, q: 0 }, { id: "b", k: KJ, v: 0, q: 0 }]
+	};
+
+	deleteDot = (id: string) => {
+		this.setState(({ dots }) => ({
+			dots: dots.filter(d => d.id !== id)
+		}));
+	};
+
+	updateDot = (id: string, k: number, v: number) => {
+		this.setState(({ dots }) => ({
+			dots: dots.map((d, i) => {
+				if (d.id !== id) return d;
+				v = Math.max(Math.min(dots[i - 1].v, v), dots[i + 1].v);
+				k = Math.min(dots[i + 1].k, Math.max(dots[i - 1].k, k));
+				return { id: d.id, k, v, q: k * v };
+			})
+		}));
+	};
+
+	addDot = (id: string, k: number, v: number) => {
+		this.setState(({ dots }) => ({
+			dots: dots.concat({ id, k, v, q: k * v }).sort((a, b) => a.k - b.k)
+		}));
+	};
+
+	render() {
+		let scale = getScale(this.state.dots);
+		return (
+			<div className={style.app}>
+				<VkPlot
+					scale={scale}
+					dots={this.state.dots}
+					addDot={this.addDot}
+					updateDot={this.updateDot}
+					deleteDot={this.deleteDot}
+				/>
+				<QkPlot scale={scale} dots={this.state.dots} />
+			</div>
+		);
+	}
+}
 
 class Lane extends PureComponent {
+	componentWillUnmount() {
+		this.T.stop();
+		this.T = null;
+	}
 	componentDidMount() {
 		let last = 0;
 		this.T = timer(elapsed => {
 			let δ = (elapsed - last) / 75;
-			this.setState(({ cars }) => {
-				return {
-					cars: cars.map(d => ({
-						id: d.id,
-						x: (d.x + δ * this.props.v) % (HEIGHT + 8)
-					}))
-				};
-			});
+			this.setState(({ cars }) => ({
+				cars: cars.map(d => ({
+					id: d.id,
+					x: (d.x + δ * this.props.v) % (HEIGHT + 8)
+				}))
+			}));
 			last = elapsed;
 		});
 	}
@@ -66,7 +123,7 @@ class Lane extends PureComponent {
 }
 
 const Lanes = pure(({ dots, scale }) => {
-	let n = 25;
+	let n = 35;
 	return (
 		<g>
 			{range(0, KJ, KJ / n).map(k => <Lane k={k} v={scale(k)} key={k} />)}
@@ -74,32 +131,18 @@ const Lanes = pure(({ dots, scale }) => {
 	);
 });
 
-class Dot extends PureComponent {
-	onMouseDown = e => {
-		let id = this.props.id;
-		e.preventDefault();
-		this.props.onMouseDown(id);
-	};
-	onContextMenu = e => {
-		let id = this.props.id;
-		e.preventDefault();
-		this.props.onContextMenu(id);
-	};
-	render() {
-		return (
-			<g
-				onMouseDown={this.onMouseDown}
-				onContextMenu={this.onContextMenu}
-				transform={`translate(${x(this.props.k)},${y(this.props.v)})`}
-			>
-				<circle r="13" className={style.selector} />
-				<circle r="5" className={style.dot} />
-			</g>
-		);
-	}
-}
+const Dot = pure(({ onMouseDown, onContextMenu, k, v }) => (
+	<g
+		onMouseDown={onMouseDown}
+		onContextMenu={onContextMenu}
+		transform={`translate(${x(k)},${y(v)})`}
+	>
+		<circle r="13" className={style.selector} />
+		<circle r="5" className={style.dot} />
+	</g>
+));
 
-export default class VkPlot extends PureComponent {
+class VkPlot extends PureComponent {
 	isDragging = false;
 	selected = "";
 	g: Element;
@@ -132,6 +175,10 @@ export default class VkPlot extends PureComponent {
 			k: x.invert(e.clientX - left),
 			v: y.invert(e.clientY - top)
 		};
+	};
+
+	deleteDot = (id: string, e: MouseEvent) => {
+		e.preventDefault(), this.props.deleteDot(id);
 	};
 
 	onClick = (e: MouseEvent) => {
@@ -175,8 +222,8 @@ export default class VkPlot extends PureComponent {
 				<g
 					clipPath="url(#hello)"
 					onMouseUp={this.onMouseUp}
-					transform={`translate(${MAR},${MAR})`}
 					onMouseMove={this.onMouseMove}
+					transform={`translate(${MAR},${MAR})`}
 				>
 					<rect
 						onMouseDown={this.onClick}
@@ -185,8 +232,7 @@ export default class VkPlot extends PureComponent {
 						height={HEIGHT}
 						ref={d => (this.rect = d)}
 					/>
-					{<Lanes scale={this.props.scale} dots={this.props.dots} />}
-
+					<Lanes scale={this.props.scale} dots={this.props.dots} />
 					{this.props.dots
 						.slice(1, this.props.dots.length - 1)
 						.map((d, i) => (
@@ -195,8 +241,8 @@ export default class VkPlot extends PureComponent {
 								k={d.k}
 								v={d.v}
 								id={d.id}
-								onMouseDown={this.selectDot}
-								onContextMenu={this.props.deleteDot}
+								onMouseDown={bind(this.selectDot, this, d.id)}
+								onContextMenu={bind(this.deleteDot, this, d.id)}
 							/>
 						))}
 					<path className={style.line} d={pathMaker(this.props.dots)} />

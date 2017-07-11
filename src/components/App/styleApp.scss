@@ -1,22 +1,65 @@
 @import '~material-colors/dist/colors';
 @import url('https://fonts.googleapis.com/css?family=Neuton|Work+Sans:400');
-
-body{
-	// font-family: 'Work Sans', sans-serif;
-	// font-family: 'Neuton', serif;
-
-	// font-family: Helvetica;
+body {
+  background-color: $md-grey-200;
 }
 
-text{
-	font-family: "Work Sans";
-	font-size: 14px;
+.app {
+    font-family: 'Work Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    a {
+        text-decoration: none;
+    }
+    text {
+        font-family: "Work Sans", sans-serif;
+        font-size: 14px;
+    }
 }
 
-.bg{
-	fill: $md-grey-300;
+.header {
+    padding: 8px 0px;
+    width: 100%;
+    background-color: $md-light-blue-a700;
+    color: white;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
 }
 
-.dot{
-	fill: $md-pink-500;
+.header > * {
+    margin: 0px 10px;
+}
+
+.button {
+    padding: 15px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    background-color: white;
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    border-radius: 2px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    will-change: box-shadow;
+    transition: box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    &::-moz-focus-inner {
+        border: 0;
+    }
+    &:hover {
+        background-color: rgba(white, 0.95);
+    }
+    &:focus:not(:active) {
+        background-color: rgba(0, 0, 0, 0.12);
+    }
+    &:active {
+        background-color: rgba(255, 255, 255, 0.40);
+        box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.content {
+    margin-top: 60px;
+    padding: 15px;
 }
