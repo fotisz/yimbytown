@@ -48,6 +48,7 @@ module.exports = {
     alias: {
       components: resolve(__dirname, "src/components"),
       constants: resolve(__dirname, "src/constants"),
+      src: resolve(__dirname, "src")
     }
   },
   devServer: {

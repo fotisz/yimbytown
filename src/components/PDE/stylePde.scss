@@ -1,0 +1,41 @@
+@import '~material-colors/dist/colors';
+div.plot {
+    width: 50%;
+    height: 400px;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.bg {
+    fill: $md-grey-100;
+}
+
+.svg {
+    width: 100%;
+    height: 100%;
+}
+
+.car {
+    fill: $md-light-blue-500;
+    rx: 1px;
+    ry: 1px;
+}
+
+.road {
+    fill: $md-blue-grey-100;
+    opacity: .7;
+    pointer-events: none;
+    stroke: none;
+}
+
+.button {
+    padding: 14px;
+    background-color: $md-grey-100;
+    width: auto;
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+}

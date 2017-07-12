@@ -1,6 +1,7 @@
 //@flow
 import React, { Component, PureComponent } from "react";
 import style from "./styleVkPlot.scss";
+import shared from "src/styleShared.scss";
 import { pure } from "recompose";
 import { scaleLinear } from "d3-scale";
 import QkPlot from "components/QkPlot";
@@ -35,10 +36,12 @@ const TIME_UNIT = 200;
 export default class App extends PureComponent {
 	state: {
 		dots: Array<DotDatum>
+		// paused: bool
 	};
 
 	state = {
-		dots: [{ id: "a", k: 0, v: VF, q: 0 }, { id: "b", k: KJ, v: 0, q: 0 }]
+		dots: [{ id: "a", k: 0, v: VF, q: 0 }, { id: "b", k: KJ, v: 0, q: 0 }],
+		paused: true
 	};
 
 	deleteDot = (id: string) => {
@@ -64,17 +67,25 @@ export default class App extends PureComponent {
 		}));
 	};
 
+	toggle = () => {
+		this.setState(({ paused }) => ({ paused: !paused }));
+	};
+
 	render() {
 		let scale = getScale(this.state.dots);
 		return (
-			<div className={style.plot}>
-				<VkPlot
-					scale={scale}
-					dots={this.state.dots}
-					addDot={this.addDot}
-					updateDot={this.updateDot}
-					deleteDot={this.deleteDot}
-				/>
+			<div className={style.main}>
+				<div className={style.plot}>
+					<VkPlot
+						scale={scale}
+						dots={this.state.dots}
+						addDot={this.addDot}
+						updateDot={this.updateDot}
+						deleteDot={this.deleteDot}
+						paused={this.state.paused}
+					/>
+				</div>
+				<div className={shared.button} onClick={this.toggle}>TOGGLE</div>
 			</div>
 		);
 	}
@@ -84,30 +95,40 @@ export default class App extends PureComponent {
 class Lane extends PureComponent {
 	constructor(props: Object) {
 		super(props);
-		let numCars = props.k * 2.2;
+		let numCars = Math.floor(props.k * 2.2);
+		let space = (LANE_LENGTH + 5) / numCars;
 		this.state = {
-			cars: range(numCars).map(d => ({
-				id: uniqueId(),
-				y: d / numCars * LANE_LENGTH
-			}))
+			cars: range(numCars).map(d => ({ id: uniqueId(), y: d * space }))
 		};
 	}
+
 	componentWillUnmount() {
-		this.T.stop();
-		this.T = null;
+		if (this.T) this.T.stop();
 	}
-	componentDidMount() {
+
+	startTimer() {
 		let last = 0;
 		this.T = timer(elapsed => {
 			let δ = (elapsed - last) / TIME_UNIT;
 			this.setState(({ cars }) => ({
 				cars: cars.map(d => ({
 					id: d.id,
-					y: (d.y + δ * this.props.v) % (LANE_LENGTH+3)
+					y: (d.y + δ * this.props.v) % (LANE_LENGTH + 5)
 				}))
 			}));
 			last = elapsed;
 		});
+	}
+
+	componentDidMount() {
+		if (!this.props.paused) this.startTimer();
+	}
+
+	componentWillUpdate({ paused }) {
+		if (paused !== this.props.paused) {
+			if (paused) this.T.stop();
+			else this.startTimer();
+		}
 	}
 
 	render() {
@@ -263,6 +284,7 @@ class VkPlot extends PureComponent {
 					<g>
 						{LANES_RANGE.map(k => (
 							<Lane
+								paused={this.props.paused}
 								k={k}
 								height={height}
 								x={x}
