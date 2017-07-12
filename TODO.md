@@ -1,5 +1,6 @@
-+ set this up with route hashing like you did for stamen
 
++ dont let the x property on the lane be the pixels. use a yscale to map it onto pixels.
++ make a constant for where you have 75
 + make IF more like the lanes on the regular visualization
 + have the flow be  
 + make the densities higher
