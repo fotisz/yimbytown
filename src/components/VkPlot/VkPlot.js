@@ -21,16 +21,14 @@ const getScale = moize((dots: Array<DotDatum>) => {
 	return scaleLinear().domain(dots.map(d => d.k)).range(dots.map(d => d.v));
 });
 const getX = moize(width => scaleLinear().domain([0, KJ]).range([0, width]));
-const getY = moize(height =>
-	scaleLinear().domain([0, VF * 1.2]).range([height, 0])
-);
-const LANE_LENGTH = 100;
+const getY = moize(height => scaleLinear().domain([0, VF*1.1]).range([height, 0]));
+const LANE_LENGTH = 200; //meters
 const getY2 = moize(height =>
-	scaleLinear().domain([0, LANE_LENGTH]).range([0, height])
+	scaleLinear().domain([0, LANE_LENGTH]).range([0, height*1.2])
 );
 const getPathMaker = moize((x, y) => line().x(d => x(d.k)).y(d => y(d.v)));
-const NUM_LANES = 35;
-const LANES_RANGE = range(0, KJ, KJ / NUM_LANES);
+const NUM_LANES = 10;
+const LANES_RANGE = range(5, KJ, KJ / NUM_LANES);
 const TIME_UNIT = 200;
 
 export default class App extends PureComponent {
@@ -85,7 +83,9 @@ export default class App extends PureComponent {
 						paused={this.state.paused}
 					/>
 				</div>
-				<div className={shared.button} onClick={this.toggle}>TOGGLE</div>
+				<div style={{textAlign: 'center'}}>
+				<div  className={shared.button} onClick={this.toggle}>TOGGLE</div>
+				</div>
 			</div>
 		);
 	}
@@ -95,8 +95,8 @@ export default class App extends PureComponent {
 class Lane extends PureComponent {
 	constructor(props: Object) {
 		super(props);
-		let numCars = Math.floor(props.k * 2.2);
-		let space = (LANE_LENGTH + 5) / numCars;
+		let numCars = Math.floor(props.k * LANE_LENGTH / 1000);
+		let space = LANE_LENGTH / numCars;
 		this.state = {
 			cars: range(numCars).map(d => ({ id: uniqueId(), y: d * space }))
 		};
@@ -113,7 +113,7 @@ class Lane extends PureComponent {
 			this.setState(({ cars }) => ({
 				cars: cars.map(d => ({
 					id: d.id,
-					y: (d.y + δ * this.props.v) % (LANE_LENGTH + 5)
+					y: (d.y + δ * this.props.v) % LANE_LENGTH
 				}))
 			}));
 			last = elapsed;
@@ -259,12 +259,12 @@ class VkPlot extends PureComponent {
 				<g transform={`translate(${MAR},${MAR})`}>
 					<g ref={d => (this.gTop = d)} transform={`translate(0,${0})`}>
 						<g transform={`translate(${width / 2},-30)`}>
-							<text className={style.axisLabel}>density</text>
+							<text className={style.axisLabel}>density (veh/km)</text>
 						</g>
 					</g>
 					<g ref={d => (this.gLeft = d)}>
 						<g transform={`translate(-35,${height / 2}) rotate(-90)`}>
-							<text className={style.axisLabel}>speed</text>
+							<text className={style.axisLabel}>speed (km/hr)</text>
 						</g>
 					</g>
 				</g>

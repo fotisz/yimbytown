@@ -7,8 +7,8 @@ import { createStore } from "redux";
 import { reducer, getXScale } from "./pdeHelpers";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
-const ROAD_HEIGHT = 20, MAR = 10;
-const Q0 = 0.5;
+const ROAD_HEIGHT = 10, MAR = 10;
+// const Q0 = 0.5;
 const TIME_UNIT = 100;
 
 function trans(x, y) {
@@ -39,7 +39,7 @@ class Svg extends Component {
 				<rect className={style.road} width={width} height={ROAD_HEIGHT} />
 				{cars.map(({ id, x }) => (
 					<rect
-						width="3"
+						width="5"
 						// y="2"
 						height={ROAD_HEIGHT - 4}
 						className={style.car}
@@ -91,7 +91,7 @@ class Pde extends Component {
 		});
 		this.adder = interval(() => {
 			this.props.add();
-		}, 100);
+		}, 25);
 	}
 
 	render() {

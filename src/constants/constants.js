@@ -1,5 +1,4 @@
-export const KJ = 10;
-export const VF = 20;
-export const W = VF / 2;
-export const Q0 = KJ / 3 * VF;
-export const K0 = KJ/3;
+export const KJ = 100;
+export const VF = 45;
+export const K0 = KJ / 4;
+export const Q0 = K0 * VF;
