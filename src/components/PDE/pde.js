@@ -1,15 +1,14 @@
 import React, { Component, PureComponent } from "react";
 import { timer, interval } from "d3-timer";
-import { KJ, VF } from "constants";
+import { KJ, VF, Q0 } from "constants";
 import style from "./stylePde.scss";
 import { Provider, connect } from "react-redux";
 import { createStore } from "redux";
 import { reducer, getXScale } from "./pdeHelpers";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
-const ROAD_HEIGHT = 10, MAR = 10;
-// const Q0 = 0.5;
-const TIME_UNIT = 100;
+const ROAD_HEIGHT = 10, MAR = 0;
+const TIME_UNIT = 50;
 
 function trans(x, y) {
 	return `translate(${x},${y})`;
@@ -34,14 +33,15 @@ class Svg extends Component {
 
 	render() {
 		let { width, height, cars, xScale } = this.props;
+		let carHeight = ROAD_HEIGHT - 4;
 		return (
 			<svg ref={d => (this.svg = d)} className={style.svg} height={ROAD_HEIGHT}>
 				<rect className={style.road} width={width} height={ROAD_HEIGHT} />
 				{cars.map(({ id, x }) => (
 					<rect
-						width="5"
-						// y="2"
-						height={ROAD_HEIGHT - 4}
+						width="10"
+						x="-5"
+						height={carHeight}
 						className={style.car}
 						key={id}
 						transform={trans(xScale(x), 2)}
@@ -89,9 +89,10 @@ class Pde extends Component {
 			this.props.tick(dt);
 			last = elapsed;
 		});
+		let a = 3600 / Q0 * TIME_UNIT;
 		this.adder = interval(() => {
 			this.props.add();
-		}, 25);
+		}, a);
 	}
 
 	render() {

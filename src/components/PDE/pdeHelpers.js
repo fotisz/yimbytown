@@ -4,43 +4,50 @@ import { scaleLinear } from "d3-scale";
 import { createSelector } from "reselect";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
-import { KJ, VF, K0, W } from "constants";
+import { KJ, VF, K0, Q0, W } from "constants";
 
-const LANE_LENGTH = 400;
-const BNECK = 300;
-const TIME_UNIT = 100;
-const VK = k => {
-	if (k <= K0) return VF;
-	if (k >= KJ) return 0;
-	return W * (KJ - k);
+const LANE_LENGTH = 800;
+const BNECK = LANE_LENGTH * 0.75;
+const TIME_UNIT = 50;
+
+const QK = k => {
+	if (k <= K0) return k * VF;
+	if (k < KJ) return Q0 - W * (k - K0);
+	return 0;
 };
-
-const VK2 = k => {
-	console.log(k);
-	if (k <= K0) return VF / 3;
-	if (k >= KJ) return 0;
-	return W / 3 * (KJ - k);
-};
-
 //
+// const QK2 = k => QK(k / 2);
+
+const VS = s => QK(1000 / s) * s / 3600; //m/s
+
+const VS2 = s => VS(s) / 2;
+
 export const getXScale = createSelector(
-	({ width }) => width,
+	({ width }) => width * 1,
 	width => scaleLinear().domain([0, LANE_LENGTH]).range([0, width])
 );
 
-const carsReduce = CR([], {
+function makeCar(x, v) {
+	return { id: uniqueId(), x, v };
+}
+
+// const CARS_INITIAL
+
+const carsReduce = CR([makeCar(50, VF), makeCar(100, VF)], {
 	tick(cars, { dt }) {
 		let l = cars.length - 1;
-		let res = [];
-		return map(cars, ({ id, x, k }, i, z) => {
-			k = i < l ? 1 / (z[i + 1].x - x) : k;
-			let v = x < BNECK ? VK(k) : VK2(k);
-			return { id, x: x + dt * v, k };
-		}).filter(d => d.x < LANE_LENGTH);
+		return map(cars, ({ id, x }, i, z) => {
+			let vs = x < BNECK ? VS : VS2;
+			let space = i < l ? z[i + 1].x - x : x - z[i - 1].x;
+			let v = vs(space);
+			return { id, x: x + dt * v, v };
+		}).filter(d => d.x < LANE_LENGTH * 1.2);
 	},
 	add(cars) {
-		let k = cars[0] ? 1 / cars[0].x : 0;
-		return [{ id: uniqueId(), x: 0, k }, ...cars];
+		if (cars[0] && cars[0].x < 1000 / KJ) return cars;
+		let s = cars[0] ? cars[0].x : 1e5;
+		let v = VS(s);
+		return [makeCar(0, v), ...cars];
 	}
 });
 
