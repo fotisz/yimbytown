@@ -15,8 +15,6 @@ const QK = k => {
 	if (k < KJ) return Q0 - W * (k - K0);
 	return 0;
 };
-//
-// const QK2 = k => QK(k / 2);
 
 const VS = s => QK(1000 / s) * s / 3600; //m/s
 

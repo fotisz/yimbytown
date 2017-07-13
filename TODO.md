@@ -1,3 +1,4 @@
++ start thinking about structure
 
 
 

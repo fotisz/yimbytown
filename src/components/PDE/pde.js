@@ -1,12 +1,14 @@
 import React, { Component, PureComponent } from "react";
-import { timer, interval } from "d3-timer";
+import { timer, interval, timeout } from "d3-timer";
 import { KJ, VF, Q0 } from "constants";
 import style from "./stylePde.scss";
 import { Provider, connect } from "react-redux";
-import { createStore } from "redux";
+import { createStore, applyMiddleware } from "redux";
 import { reducer, getXScale, TIME_UNIT } from "./pdeHelpers";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
+import thunk from "redux-thunk";
+
 const ROAD_HEIGHT = 10, MAR = 0;
 // const TIME_UNIT = 50;
 
@@ -14,7 +16,7 @@ function trans(x, y) {
 	return `translate(${x},${y})`;
 }
 
-class Svg extends Component {
+class Svg$ extends Component {
 	componentWillUnmount() {
 		window.removeEventListener("resize", this.resize);
 	}
@@ -52,80 +54,68 @@ class Svg extends Component {
 	}
 }
 
-const SvgWrapped = connect(state => ({
+const Svg = connect(state => ({
 	cars: state.cars,
 	xScale: getXScale(state),
 	width: state.width
-}))(Svg);
+}))(Svg$);
 
-class Pde extends Component {
-	componentWillUnmount() {
-		if (this.ticker) {
-			this.stopTimer();
-			this.ticker = this.adder = null;
-		}
-	}
+const Pde$ = ({ pausePlay, paused }) => (
+	<div className={style.main}>
+		<Svg />
+		<div className={style.button} onClick={pausePlay}>
+			{paused ? "PLAY" : "PAUSE"}
+		</div>
+	</div>
+);
 
-	componentDidMount() {
-		if (!this.props.paused) this.startTimer();
-	}
-
-	stopTimer() {
-		if (this.ticker) {
-			this.ticker.stop();
-			this.adder.stop();
-		}
-	}
-
-	componentWillUpdate({ paused }) {
-		if (paused) this.stopTimer();
-		else this.startTimer();
-	}
-
-	startTimer() {
+function startPlaying() {
+	return (dispatch, getState) => {
 		let last = 0;
-		this.ticker = timer(elapsed => {
+		let ticker = timer(elapsed => {
 			let dt = (elapsed - last) / TIME_UNIT;
-			this.props.tick(dt);
+			dispatch({ type: "tick", dt });
 			last = elapsed;
+			if (getState().paused) {
+				ticker.stop();
+			}
 		});
-		let a = 3600 / Q0 * TIME_UNIT;
-		this.adder = interval(() => {
-			this.props.add();
-		}, a);
-	}
-
-	render() {
-		return (
-			<div className={style.main}>
-				<SvgWrapped />
-				<div className={style.button} onClick={this.props.pausePlay}>
-					{this.props.paused ? "PLAY" : "PAUSE"}
-				</div>
-			</div>
-		);
-	}
+		let adder = interval(() => {
+			dispatch({ type: "add" });
+			if (getState().paused) {
+				adder.stop();
+			}
+		}, 3600 / Q0 * TIME_UNIT);
+	};
 }
 
-const PdeWrapped = connect(
+function pausePlay() {
+	return (dispatch, getState) => {
+		dispatch({ type: "pausePlay" });
+		timeout(() => {
+			if (!getState().paused) {
+				dispatch(startPlaying());
+			}
+		});
+	};
+}
+
+const Pde = connect(
 	({ paused }) => ({ paused }),
 	dispatch => ({
 		pausePlay() {
-			dispatch({ type: "pausePlay" });
-		},
-		tick(dt) {
-			dispatch({ type: "tick", dt });
+			dispatch(pausePlay());
 		},
 		add() {
 			dispatch({ type: "add" });
 		}
 	})
-)(Pde);
+)(Pde$);
 
-const store = createStore(reducer);
+const store = createStore(reducer, applyMiddleware(thunk));
 
 export default () => (
 	<Provider store={store}>
-		<PdeWrapped />
+		<Pde />
 	</Provider>
 );
