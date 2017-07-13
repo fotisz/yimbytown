@@ -11,7 +11,6 @@ import { line } from "d3-shape";
 import { KJ, VF, K0, Q0, W } from "constants";
 
 export const NUM_LANES = 10;
-// export const LANES_RANGE = range(5, KJ, KJ / NUM_LANES);
 export const TIME_UNIT = 200;
 export const LANE_LENGTH = 200; //meters
 
@@ -70,27 +69,29 @@ function makeCar(x) {
 }
 
 const LANES_INITIAL = range(0, NUM_LANES).map(i => {
+	let k = 5 + i / NUM_LANES * KJ;
+	let numCars = Math.floor(k * LANE_LENGTH / 1000);
+	let space = LANE_LENGTH / numCars;
 	return {
-		k: 5+i / NUM_LANES * KJ,
-		cars: []
+		k,
+		cars: range(numCars).map(d => ({ id: uniqueId(), x: d * space }))
 	};
 });
 
 const lanesReduce = CR(LANES_INITIAL, {
-	addCar(lanes, { index }) {
-		return map(lanes, (lane, i) => {
-			if (i !== index) return lane;
-			let cars = lane.cars;
-			let x = 0;
-			return upo(lane, { cars: [makeCar(x), ...cars] });
-		});
-	},
+	// addCar(lanes, { index }) {
+	// 	return map(lanes, (lane, i) => {
+	// 		if (i !== index) return lane;
+	// 		let cars = lane.cars;
+	// 		let x = 0;
+	// 		return upo(lane, { cars: [makeCar(x), ...cars] });
+	// 	});
+	// },
 	tick(lanes, { dt, vk }) {
 		return map(lanes, ({ cars, k }) => {
 			const v = vk(k);
-			// const res = [];
-			cars = map(cars, d => {
-				return { id: d.id, x: d.x + dt * v };
+			cars = map(cars, ({ id, x }) => {
+				return { id, x: (x + dt * v) % LANE_LENGTH };
 			});
 			return { cars, k };
 		});

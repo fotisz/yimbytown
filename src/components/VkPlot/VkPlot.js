@@ -50,6 +50,20 @@ const Lane = pure(({ height, k, x, cars }) => {
 	);
 });
 
+const Lanes = connect((state, props) => ({
+	lanes: state.lanes,
+	height: props.height,
+	x: props.x
+}))(({ lanes, height, x }) => {
+	return (
+		<g>
+			{lanes.map(lane => (
+				<Lane k={lane.k} height={height} x={x} cars={lane.cars} key={lane.k} />
+			))}
+		</g>
+	);
+});
+
 const Dot = pure(({ onMouseDown, onContextMenu, k, v, x, y }) => (
 	<g
 		onMouseDown={onMouseDown}
@@ -163,17 +177,7 @@ class Svg$ extends Component {
 						height={height}
 						ref={d => (this.rect = d)}
 					/>
-					<g>
-						{this.props.lanes.map(lane => (
-							<Lane
-								k={lane.k}
-								height={height}
-								x={x}
-								cars={lane.cars}
-								key={lane.k}
-							/>
-						))}
-					</g>
+					<Lanes x={x} height={height} />
 					{this.props.dots
 						.slice(1, this.props.dots.length - 1)
 						.map((d, i) => (
@@ -200,42 +204,16 @@ const Svg = connect(state => ({
 	lanes: state.lanes
 }))(Svg$);
 
-class $VkPlot extends Component {
-	toggle = () => {
-		this.props.pausePlay();
-		if (this.props.paused) {
-			this.props.startPlaying();
-		}
-	};
-
-	render() {
-		return (
-			<div className={style.main}>
-				<div className={style.plot}>
-					<Svg />
-				</div>
-				<div style={{ textAlign: "center" }}>
-					<div className={shared.button} onClick={this.toggle}>TOGGLE</div>
-				</div>
-			</div>
-		);
-	}
-}
-
-function startLaneAdding(index) {
-	return (dispatch, getState) => {
-		function hello() {
-			let state = getState();
-			let k = state.lanes[index].k;
-			let q = getVk(state)(k) * k / 1000;
-			timeout(() => {
-				dispatch({ type: "addCar", index });
-				if (!getState().paused) hello();
-			}, TIME_UNIT / q);
-		}
-		hello();
-	};
-}
+const $VkPlot = ({ pausePlay }) => (
+	<div className={style.main}>
+		<div className={style.plot}>
+			<Svg />
+		</div>
+		<div style={{ textAlign: "center" }}>
+			<div className={shared.button} onClick={pausePlay}>TOGGLE</div>
+		</div>
+	</div>
+);
 
 function startPlaying() {
 	return (dispatch, getState) => {
@@ -249,26 +227,25 @@ function startPlaying() {
 				ticker.stop();
 			}
 		});
-		for (var i = 0; i < getState().lanes.length; i++) {
-			dispatch(startLaneAdding(i));
-		}
 	};
 }
 
-const VkPlot = connect(
-	state => ({
-		dots: state.dots,
-		paused: state.paused
-	}),
-	dispatch => ({
-		startPlaying() {
-			dispatch(startPlaying());
-		},
-		pausePlay() {
-			dispatch({ type: "pausePlay" });
-		}
-	})
-)($VkPlot);
+function pausePlay() {
+	return (dispatch, getState) => {
+		dispatch({ type: "pausePlay" });
+		timeout(() => {
+			if (!getState().paused) {
+				dispatch(startPlaying());
+			}
+		});
+	};
+}
+
+const VkPlot = connect(null, dispatch => ({
+	pausePlay() {
+		dispatch(pausePlay());
+	}
+}))($VkPlot);
 
 export default () => (
 	<Provider store={store}>
