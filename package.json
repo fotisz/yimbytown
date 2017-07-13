@@ -30,6 +30,7 @@
     "recompose": "^0.23.1",
     "redux": "^3.7.1",
     "redux-create-reducer": "^1.1.1",
+    "redux-thunk": "^2.2.0",
     "reselect": "^3.0.1",
     "style-loader": "^0.17.0",
     "webpack": "^2.5.1",
