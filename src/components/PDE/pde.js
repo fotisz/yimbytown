@@ -4,11 +4,11 @@ import { KJ, VF, Q0 } from "constants";
 import style from "./stylePde.scss";
 import { Provider, connect } from "react-redux";
 import { createStore } from "redux";
-import { reducer, getXScale } from "./pdeHelpers";
+import { reducer, getXScale, TIME_UNIT } from "./pdeHelpers";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
 const ROAD_HEIGHT = 10, MAR = 0;
-const TIME_UNIT = 50;
+// const TIME_UNIT = 50;
 
 function trans(x, y) {
 	return `translate(${x},${y})`;
@@ -39,7 +39,7 @@ class Svg extends Component {
 				<rect className={style.road} width={width} height={ROAD_HEIGHT} />
 				{cars.map(({ id, x }) => (
 					<rect
-						width="10"
+						width="8"
 						x="-5"
 						height={carHeight}
 						className={style.car}

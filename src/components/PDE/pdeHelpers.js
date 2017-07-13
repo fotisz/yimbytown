@@ -6,9 +6,9 @@ import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
 import { KJ, VF, K0, Q0, W } from "constants";
 
-const LANE_LENGTH = 800;
+const LANE_LENGTH = 1500;
 const BNECK = LANE_LENGTH * 0.75;
-const TIME_UNIT = 50;
+export const TIME_UNIT = 50;
 
 const QK = k => {
 	if (k <= K0) return k * VF;
