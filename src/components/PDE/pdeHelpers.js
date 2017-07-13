@@ -5,11 +5,18 @@ import { createSelector } from "reselect";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
 import { KJ, VF, K0, Q0, W } from "constants";
+import { interpolateHcl } from "d3-interpolate";
+import colors from "material-colors";
 
 const LANE_LENGTH = 1500;
 const BNECK = LANE_LENGTH * 0.75;
 export const TIME_UNIT = 50;
-
+export const colorScale = scaleLinear()
+	.domain([0, 1000 / K0])
+	.interpolate(interpolateHcl)
+	.range([colors.red["100"], colors.lightBlue["700"]])
+	.clamp(true);
+console.log(colorScale(400));
 const QK = k => {
 	if (k <= K0) return k * VF;
 	if (k < KJ) return Q0 - W * (k - K0);
