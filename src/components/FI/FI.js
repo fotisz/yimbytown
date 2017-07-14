@@ -135,14 +135,17 @@ class FI extends PureComponent {
 		return (
 			<div className={style.main}>
 				<div className={style.row}>
-					<input
-						type="range"
-						onChange={this.onChange}
-						value={this.state.k}
-						min="0"
-						step="0.5"
-						max={KJ}
-					/>
+					<div>
+						<div>Density (veh/km)</div>
+						<input
+							type="range"
+							onChange={this.onChange}
+							value={this.state.k}
+							min="0"
+							step="0.5"
+							max={KJ}
+						/>
+					</div>
 					<div className={shared.button} onClick={this.pausePlay}>
 						{this.state.paused ? "PLAY" : "PAUSE"}
 					</div>

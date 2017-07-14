@@ -16,7 +16,7 @@ const B0 = LANE_LENGTH * 0.5;
 const B1 = LANE_LENGTH * 0.7;
 export const TIME_UNIT = 30;
 export const colorScale = scaleLinear()
-	.domain([1000 / KJ - 2, 1000 / K0 + 60])
+	.domain([1000 / KJ - 4, 1000 / K0 + 40])
 	.interpolate(interpolateHslLong)
 	.range([colors.deepPurple["a700"], colors.yellow["a200"]])
 	.clamp(true);

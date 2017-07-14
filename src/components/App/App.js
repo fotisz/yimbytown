@@ -2,12 +2,11 @@ import React from "react";
 import { HashRouter, Route, Link } from "react-router-dom";
 import VkPlot from "components/VkPlot";
 import PDE from "components/PDE";
-import FI from 'components/FI';
+import FI from "components/FI";
 import { app, header, content } from "./styleApp.scss";
 import { button } from "src/styleShared.scss";
 
-
-const Home = () => <div>hello</div>;
+const Home = () => <div>Welcome to my talk!</div>;
 
 export default () => (
 	<HashRouter>
