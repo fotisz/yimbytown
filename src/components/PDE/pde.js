@@ -18,7 +18,7 @@ import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
 import thunk from "redux-thunk";
 
-const ROAD_HEIGHT = 10, MAR = 0;
+const ROAD_HEIGHT = 20, MAR = 0;
 
 function trans(x, y) {
 	return `translate(${x},${y})`;
@@ -31,14 +31,14 @@ class Canvas extends Component {
 	}
 	componentDidUpdate() {
 		let { cars } = this.props;
-		J++;
+		J += 0.4;
 		cars.forEach((d, i) => {
 			if (i == 0 || i == cars.length - 1) return;
-			let x = xScale(d.x);
-			let gap = cars[i + 1].x - d.x;
-			let w = xScale(cars[i + 1].x) - x;
+			let x = xScale((d.x + cars[i - 1].x) / 2);
+			let gap = (cars[i + 1].x - cars[i - 1].x) / 2;
+			let w = xScale(gap);
 			this.ctx.fillStyle = colorScale(gap);
-			this.ctx.fillRect(x, CANVAS_HEIGHT - J, w, 1);
+			this.ctx.fillRect(x, CANVAS_HEIGHT - J, w, .5);
 		});
 	}
 	render() {
@@ -63,7 +63,7 @@ class Canvas extends Component {
 class Svg$ extends Component {
 	render() {
 		let { cars } = this.props;
-		let carHeight = ROAD_HEIGHT - 4;
+		let carHeight = ROAD_HEIGHT - 6;
 		return (
 			<div>
 				<svg
@@ -75,8 +75,8 @@ class Svg$ extends Component {
 					<rect className={style.road} height={ROAD_HEIGHT} width={WIDTH} />
 					{cars.map(({ id, x }) => (
 						<rect
-							width="4"
-							x="-5"
+							width="3"
+							x="-1.25"
 							height={carHeight}
 							className={style.car}
 							key={id}
@@ -96,15 +96,16 @@ const Svg = connect(state => ({
 	cars: state.cars
 }))(Svg$);
 
-const Pde$ = ({ pausePlay, paused }) => (
+const Pde$ = ({ pausePlay, toggleBneck, paused, bneckEnabled }) => (
 	<div className={style.plot}>
-		<div style={{ display: "flex", flexDirection: "column"}}>
-			<div
-				className={shared.button}
-				onClick={pausePlay}
-				style={{ marginBottom: "10px" }}
-			>
-				{paused ? "PLAY" : "PAUSE"}
+		<div style={{ display: "flex", flexDirection: "column" }}>
+			<div className={style.buttonRow}>
+				<div className={shared.button} onClick={pausePlay}>
+					{paused ? "PLAY" : "PAUSE"}
+				</div>
+				<div className={shared.button} onClick={toggleBneck}>
+					{bneckEnabled ? "DISABLE BOTTLENECK" : "ENABLE BOTTLENECK"}
+				</div>
 			</div>
 			<Svg />
 		</div>
@@ -116,11 +117,12 @@ function startPlaying() {
 		let last = 0;
 		let ticker = timer(elapsed => {
 			let dt = (elapsed - last) / TIME_UNIT;
-			dispatch({ type: "tick", dt });
-			last = elapsed;
-			if (getState().paused) {
-				ticker.stop();
+			let state = getState();
+			if (state.paused) {
+				return ticker.stop();
 			}
+			dispatch({ type: "tick", dt, bneckEnabled: state.bneckEnabled });
+			last = elapsed;
 		});
 		let adder = interval(() => {
 			dispatch({ type: "add" });
@@ -143,13 +145,13 @@ function pausePlay() {
 }
 
 const Pde = connect(
-	({ paused }) => ({ paused }),
+	({ paused, bneckEnabled }) => ({ paused, bneckEnabled }),
 	dispatch => ({
 		pausePlay() {
 			dispatch(pausePlay());
 		},
-		add() {
-			dispatch({ type: "add" });
+		toggleBneck() {
+			dispatch({ type: "toggleBneck" });
 		}
 	})
 )(Pde$);

@@ -19,6 +19,12 @@ div.plot {
     // transformY: translate(-100%);
 }
 
+.buttonRow{
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-around;
+}
+
 .car {
     fill: $md-light-blue-500;
     rx: 1px;

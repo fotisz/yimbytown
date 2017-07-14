@@ -5,18 +5,20 @@ import { createSelector } from "reselect";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
 import { KJ, VF, K0, Q0, W } from "constants";
-import { interpolateHcl } from "d3-interpolate";
+import range from "lodash/range";
+import { interpolateHcl, interpolateHslLong } from "d3-interpolate";
 import colors from "material-colors";
 export const CANVAS_HEIGHT = 1e4;
-const LANE_LENGTH = 3000;
-export const WIDTH = 800;
-export const HEIGHT = 750;
-const BNECK = LANE_LENGTH * 0.75;
-export const TIME_UNIT = 35;
+const LANE_LENGTH = 4000;
+export const WIDTH = 1100;
+// export const HEIGHT = 900;
+const B0 = LANE_LENGTH * 0.5;
+const B1 = LANE_LENGTH * 0.7;
+export const TIME_UNIT = 30;
 export const colorScale = scaleLinear()
-	.domain([1000 / KJ, 1000 / K0])
-	.interpolate(interpolateHcl)
-	.range([colors.pink["a200"], colors.yellow["a700"]])
+	.domain([1000 / KJ + 1, 1000 / K0 + 1])
+	.interpolate(interpolateHslLong)
+	.range([colors.deepPurple["a700"], colors.yellow["a200"]])
 	.clamp(true);
 
 const QK = k => {
@@ -27,29 +29,39 @@ const QK = k => {
 
 const VS = s => QK(1000 / s) * s / 3600; //m/s
 
-const VS2 = s => VS(s) / 2;
-
 export const xScale = scaleLinear().domain([0, LANE_LENGTH]).range([0, WIDTH]);
 
 function makeCar(x, v) {
 	return { id: uniqueId(), x, v };
 }
 
-const carsReduce = CR([makeCar(50, VF), makeCar(100, VF)], {
-	tick(cars, { dt }) {
+const carsReduce = CR(range(0, 150).map(d => makeCar(d * 1000 / K0, VF)), {
+	tick(cars, { dt, bneckEnabled }) {
 		let l = cars.length - 1;
-		return map(cars, ({ id, x }, i, z) => {
-			let vs = x < BNECK ? VS : VS2;
-			let space = i < l ? z[i + 1].x - x : x - z[i - 1].x;
-			let v = vs(space);
-			return { id, x: x + dt * v, v };
-		}).filter(d => d.x < LANE_LENGTH * 1.2);
+		let res = [];
+
+		for (var i = 0; i <= l; i++) {
+			let { x, id } = cars[i];
+			let space = i < l ? cars[i + 1].x - x : x - cars[i - 1].x;
+			let v = !bneckEnabled || x < B0 || x > B1 ? VS(space) : VS(space) / 2.5;
+			if (x <= LANE_LENGTH) res.push({ id, x: x + dt * v });
+		}
+		return res;
+		// return map(cars, ({ id, x }, i, z) => {
+		// 	return { id, x: x + dt * v, v };
+		// }).filter(d => d.x < LANE_LENGTH * 1.05);
 	},
 	add(cars) {
 		if (cars[0] && cars[0].x < 1000 / KJ) return cars;
 		let s = cars[0] ? cars[0].x : 1e5;
 		let v = VS(s);
 		return [makeCar(0, v), ...cars];
+	}
+});
+
+const bneckEnabledReduce = CR(false, {
+	toggleBneck(enabled) {
+		return !enabled;
 	}
 });
 
@@ -61,7 +73,8 @@ const pausedReduce = CR(true, {
 
 export const reducer = combineReducers({
 	cars: carsReduce,
-	paused: pausedReduce
+	paused: pausedReduce,
+	bneckEnabled: bneckEnabledReduce
 });
 
 function upo(oldObject, newValues) {
