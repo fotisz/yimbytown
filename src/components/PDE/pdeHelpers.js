@@ -7,18 +7,18 @@ import uniqueId from "lodash/uniqueId";
 import { KJ, VF, K0, Q0, W } from "constants";
 import { interpolateHcl } from "d3-interpolate";
 import colors from "material-colors";
-
-const LANE_LENGTH = 1500;
-export const WIDTH = 600;
-export const HEIGHT = 600;
+export const CANVAS_HEIGHT = 1e4;
+const LANE_LENGTH = 3000;
+export const WIDTH = 800;
+export const HEIGHT = 750;
 const BNECK = LANE_LENGTH * 0.75;
-export const TIME_UNIT = 50;
+export const TIME_UNIT = 35;
 export const colorScale = scaleLinear()
 	.domain([1000 / KJ, 1000 / K0])
 	.interpolate(interpolateHcl)
 	.range([colors.pink["a200"], colors.yellow["a700"]])
 	.clamp(true);
-console.log(colorScale(400));
+
 const QK = k => {
 	if (k <= K0) return k * VF;
 	if (k < KJ) return Q0 - W * (k - K0);
@@ -30,18 +30,10 @@ const VS = s => QK(1000 / s) * s / 3600; //m/s
 const VS2 = s => VS(s) / 2;
 
 export const xScale = scaleLinear().domain([0, LANE_LENGTH]).range([0, WIDTH]);
-// export const yScale = 
-
-// export const getXScale = createSelector(
-// 	({ width }) => width * 1,
-// 	width => scaleLinear().domain([0, LANE_LENGTH]).range([0, width])
-// );
 
 function makeCar(x, v) {
 	return { id: uniqueId(), x, v };
 }
-
-// const CARS_INITIAL
 
 const carsReduce = CR([makeCar(50, VF), makeCar(100, VF)], {
 	tick(cars, { dt }) {
@@ -69,7 +61,7 @@ const pausedReduce = CR(true, {
 
 export const reducer = combineReducers({
 	cars: carsReduce,
-	paused: pausedReduce,
+	paused: pausedReduce
 });
 
 function upo(oldObject, newValues) {

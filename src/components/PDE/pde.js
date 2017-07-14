@@ -2,6 +2,7 @@ import React, { Component, PureComponent } from "react";
 import { timer, interval, timeout } from "d3-timer";
 import { KJ, VF, Q0 } from "constants";
 import style from "./stylePde.scss";
+import shared from "src/styleShared.scss";
 import { Provider, connect } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 import {
@@ -10,7 +11,8 @@ import {
 	WIDTH,
 	colorScale,
 	xScale,
-	HEIGHT
+	HEIGHT,
+	CANVAS_HEIGHT
 } from "./pdeHelpers";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
@@ -29,7 +31,6 @@ class Canvas extends Component {
 	}
 	componentDidUpdate() {
 		let { cars } = this.props;
-		// let h = J++ * ROAD_HEIGHT;
 		J++;
 		cars.forEach((d, i) => {
 			if (i == 0 || i == cars.length - 1) return;
@@ -37,22 +38,21 @@ class Canvas extends Component {
 			let gap = cars[i + 1].x - d.x;
 			let w = xScale(cars[i + 1].x) - x;
 			this.ctx.fillStyle = colorScale(gap);
-			this.ctx.fillRect(x, 1000 - J, w, 1);
+			this.ctx.fillRect(x, CANVAS_HEIGHT - J, w, 1);
 		});
 	}
 	render() {
 		return (
 			<div
 				style={{
-					top: "-1000px",
-					transform: `translateY(${J}px)`,
+					transform: `translateY(${J - CANVAS_HEIGHT}px)`,
 					position: "relative"
 				}}
 			>
 				<canvas
 					className={style.canvas}
 					width={WIDTH}
-					height={1000}
+					height={CANVAS_HEIGHT}
 					ref={d => (this.canvas = d)}
 				/>
 			</div>
@@ -62,10 +62,10 @@ class Canvas extends Component {
 
 class Svg$ extends Component {
 	render() {
-		let { height, cars } = this.props;
+		let { cars } = this.props;
 		let carHeight = ROAD_HEIGHT - 4;
 		return (
-			<div style={{ display: "inline-block" }}>
+			<div>
 				<svg
 					ref={d => (this.svg = d)}
 					className={style.svg}
@@ -75,7 +75,7 @@ class Svg$ extends Component {
 					<rect className={style.road} height={ROAD_HEIGHT} width={WIDTH} />
 					{cars.map(({ id, x }) => (
 						<rect
-							width="8"
+							width="4"
 							x="-5"
 							height={carHeight}
 							className={style.car}
@@ -84,7 +84,9 @@ class Svg$ extends Component {
 						/>
 					))}
 				</svg>
-				<Canvas cars={cars} height={height} />
+				<div style={{ overflowY: "scroll", height: "400px" }}>
+					<Canvas cars={cars} />
+				</div>
 			</div>
 		);
 	}
@@ -96,10 +98,16 @@ const Svg = connect(state => ({
 
 const Pde$ = ({ pausePlay, paused }) => (
 	<div className={style.plot}>
-		<div className={style.button} onClick={pausePlay}>
-			{paused ? "PLAY" : "PAUSE"}
+		<div style={{ display: "flex", flexDirection: "column"}}>
+			<div
+				className={shared.button}
+				onClick={pausePlay}
+				style={{ marginBottom: "10px" }}
+			>
+				{paused ? "PLAY" : "PAUSE"}
+			</div>
+			<Svg />
 		</div>
-		<Svg />
 	</div>
 );
 
