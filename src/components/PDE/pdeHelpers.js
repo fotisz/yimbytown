@@ -9,12 +9,14 @@ import { interpolateHcl } from "d3-interpolate";
 import colors from "material-colors";
 
 const LANE_LENGTH = 1500;
+export const WIDTH = 600;
+export const HEIGHT = 600;
 const BNECK = LANE_LENGTH * 0.75;
 export const TIME_UNIT = 50;
 export const colorScale = scaleLinear()
-	.domain([0, 1000 / K0])
+	.domain([1000 / KJ, 1000 / K0])
 	.interpolate(interpolateHcl)
-	.range([colors.red["100"], colors.lightBlue["700"]])
+	.range([colors.pink["a200"], colors.yellow["a700"]])
 	.clamp(true);
 console.log(colorScale(400));
 const QK = k => {
@@ -27,10 +29,13 @@ const VS = s => QK(1000 / s) * s / 3600; //m/s
 
 const VS2 = s => VS(s) / 2;
 
-export const getXScale = createSelector(
-	({ width }) => width * 1,
-	width => scaleLinear().domain([0, LANE_LENGTH]).range([0, width])
-);
+export const xScale = scaleLinear().domain([0, LANE_LENGTH]).range([0, WIDTH]);
+// export const yScale = 
+
+// export const getXScale = createSelector(
+// 	({ width }) => width * 1,
+// 	width => scaleLinear().domain([0, LANE_LENGTH]).range([0, width])
+// );
 
 function makeCar(x, v) {
 	return { id: uniqueId(), x, v };
@@ -62,14 +67,9 @@ const pausedReduce = CR(true, {
 	}
 });
 
-const widthReduce = CR(500, {
-	resize: (_, { width }) => width
-});
-
 export const reducer = combineReducers({
 	cars: carsReduce,
 	paused: pausedReduce,
-	width: widthReduce
 });
 
 function upo(oldObject, newValues) {

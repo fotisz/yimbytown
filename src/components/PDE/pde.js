@@ -4,7 +4,14 @@ import { KJ, VF, Q0 } from "constants";
 import style from "./stylePde.scss";
 import { Provider, connect } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
-import { reducer, getXScale, TIME_UNIT, colorScale } from "./pdeHelpers";
+import {
+	reducer,
+	TIME_UNIT,
+	WIDTH,
+	colorScale,
+	xScale,
+	HEIGHT
+} from "./pdeHelpers";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
 import thunk from "redux-thunk";
@@ -14,63 +21,58 @@ const ROAD_HEIGHT = 10, MAR = 0;
 function trans(x, y) {
 	return `translate(${x},${y})`;
 }
+let J = 0;
 
 class Canvas extends Component {
 	componentDidMount() {
 		this.ctx = this.canvas.getContext("2d");
 	}
 	componentDidUpdate() {
-		let { cars, xScale } = this.props;
-		// this.ctx.clearRect(0, 0, this.props.width, this.props.height);
+		let { cars } = this.props;
+		// let h = J++ * ROAD_HEIGHT;
+		J++;
 		cars.forEach((d, i) => {
 			if (i == 0 || i == cars.length - 1) return;
 			let x = xScale(d.x);
 			let gap = cars[i + 1].x - d.x;
 			let w = xScale(cars[i + 1].x) - x;
 			this.ctx.fillStyle = colorScale(gap);
-			this.ctx.fillRect(x, 0, w, 15);
+			this.ctx.fillRect(x, 1000 - J, w, 1);
 		});
 	}
 	render() {
 		return (
-			<canvas
-				className={style.canvas}
-				width={this.props.width}
-				height={this.props.height}
-				ref={d => (this.canvas = d)}
-			/>
+			<div
+				style={{
+					top: "-1000px",
+					transform: `translateY(${J}px)`,
+					position: "relative"
+				}}
+			>
+				<canvas
+					className={style.canvas}
+					width={WIDTH}
+					height={1000}
+					ref={d => (this.canvas = d)}
+				/>
+			</div>
 		);
 	}
 }
 
 class Svg$ extends Component {
-	componentWillUnmount() {
-		window.removeEventListener("resize", this.resize);
-	}
-
-	resize = () => {
-		this.props.dispatch({
-			type: "resize",
-			width: this.svg.clientWidth - 2 * MAR
-		});
-	};
-
-	componentDidMount() {
-		window.addEventListener("resize", this.resize);
-		this.resize();
-	}
-
 	render() {
-		let { width, height, cars, xScale } = this.props;
+		let { height, cars } = this.props;
 		let carHeight = ROAD_HEIGHT - 4;
 		return (
-			<div style={{ width: "100%", height: "100%" }}>
+			<div style={{ display: "inline-block" }}>
 				<svg
 					ref={d => (this.svg = d)}
 					className={style.svg}
 					height={ROAD_HEIGHT}
+					width={WIDTH}
 				>
-					<rect className={style.road} width={width} height={ROAD_HEIGHT} />
+					<rect className={style.road} height={ROAD_HEIGHT} width={WIDTH} />
 					{cars.map(({ id, x }) => (
 						<rect
 							width="8"
@@ -82,24 +84,22 @@ class Svg$ extends Component {
 						/>
 					))}
 				</svg>
-				<Canvas cars={cars} xScale={xScale} height={height} width={width} />
+				<Canvas cars={cars} height={height} />
 			</div>
 		);
 	}
 }
 
 const Svg = connect(state => ({
-	cars: state.cars,
-	xScale: getXScale(state),
-	width: state.width
+	cars: state.cars
 }))(Svg$);
 
 const Pde$ = ({ pausePlay, paused }) => (
-	<div className={style.main}>
-		<Svg />
+	<div className={style.plot}>
 		<div className={style.button} onClick={pausePlay}>
 			{paused ? "PLAY" : "PAUSE"}
 		</div>
+		<Svg />
 	</div>
 );
 
