@@ -21,12 +21,14 @@ import {
 	reducer,
 	getX,
 	getPathMaker,
+	getPathMaker2,
 	getY,
 	getVk,
 	getY2,
+	getY3,
 	TIME_UNIT
 } from "./vkHelpers";
-const MAR = 40;
+const MAR = 55;
 
 const store = createStore(reducer, applyMiddleware(thunk));
 
@@ -75,7 +77,7 @@ const Dot = pure(({ onMouseDown, onContextMenu, k, v, x, y }) => (
 	</g>
 ));
 
-class Svg$ extends Component {
+class VkPlot$ extends Component {
 	state = {
 		width: 500,
 		height: 500
@@ -89,7 +91,7 @@ class Svg$ extends Component {
 			() => {
 				let x = getX(this.state.width);
 				let y = getY(this.state.height);
-				select(this.gTop).call(axisTop().scale(x));
+				select(this.gTop).call(axisBottom().scale(x));
 				select(this.gLeft).call(axisLeft().scale(y));
 			}
 		);
@@ -146,68 +148,144 @@ class Svg$ extends Component {
 		const y = getY(height);
 		const pathMaker = getPathMaker(x, y);
 		return (
-			<svg ref={d => (this.svg = d)} className={style.svg}>
-				<defs>
-					<clipPath id="hello">
-						<rect width={width} height={height} />
-					</clipPath>
-				</defs>
-				<g transform={`translate(${MAR},${MAR})`}>
-					<g ref={d => (this.gTop = d)} transform={`translate(0,${0})`}>
-						<g transform={`translate(${width / 2},-30)`}>
-							<text className={style.axisLabel}>density (veh/km)</text>
+			<div>
+				<svg ref={d => (this.svg = d)} className={style.svg}>
+					<defs>
+						<clipPath id="hello">
+							<rect width={width} height={height} />
+						</clipPath>
+					</defs>
+					<g transform={`translate(${MAR},${MAR})`}>
+						<g ref={d => (this.gTop = d)} transform={`translate(0,${height})`}>
+							<g transform={`translate(${width / 2},-30)`}>
+								<text className={style.axisLabel}>density (veh/km)</text>
+							</g>
+						</g>
+						<g ref={d => (this.gLeft = d)}>
+							<g transform={`translate(-35,${height / 2}) rotate(-90)`}>
+								<text className={style.axisLabel}>speed (km/hr)</text>
+							</g>
 						</g>
 					</g>
-					<g ref={d => (this.gLeft = d)}>
-						<g transform={`translate(-35,${height / 2}) rotate(-90)`}>
-							<text className={style.axisLabel}>speed (km/hr)</text>
-						</g>
+					<g
+						clipPath="url(#hello)"
+						onMouseUp={this.onMouseUp}
+						onMouseMove={this.onMouseMove}
+						transform={`translate(${MAR},${MAR})`}
+					>
+						<rect
+							onMouseDown={this.onClick}
+							className={style.bg}
+							width={width}
+							height={height}
+							ref={d => (this.rect = d)}
+						/>
+						<Lanes x={x} height={height} />
+						{this.props.dots
+							.slice(1, this.props.dots.length - 1)
+							.map((d, i) => (
+								<Dot
+									key={d.id}
+									k={d.k}
+									v={d.v}
+									id={d.id}
+									x={x}
+									y={y}
+									onMouseDown={bind(this.selectDot, this, d.id)}
+									onContextMenu={bind(this.deleteDot, this, d.id)}
+								/>
+							))}
+						<path className={style.line} d={pathMaker(this.props.dots)} />
 					</g>
-				</g>
-				<g
-					clipPath="url(#hello)"
-					onMouseUp={this.onMouseUp}
-					onMouseMove={this.onMouseMove}
-					transform={`translate(${MAR},${MAR})`}
-				>
-					<rect
-						onMouseDown={this.onClick}
-						className={style.bg}
-						width={width}
-						height={height}
-						ref={d => (this.rect = d)}
-					/>
-					<Lanes x={x} height={height} />
-					{this.props.dots
-						.slice(1, this.props.dots.length - 1)
-						.map((d, i) => (
-							<Dot
-								key={d.id}
-								k={d.k}
-								v={d.v}
-								id={d.id}
-								x={x}
-								y={y}
-								onMouseDown={bind(this.selectDot, this, d.id)}
-								onContextMenu={bind(this.deleteDot, this, d.id)}
-							/>
-						))}
-					<path className={style.line} d={pathMaker(this.props.dots)} />
-				</g>
-			</svg>
+				</svg>
+			</div>
 		);
 	}
 }
 
-const Svg = connect(state => ({
+const VkPlot = connect(state => ({
 	dots: state.dots,
 	lanes: state.lanes
-}))(Svg$);
+}))(VkPlot$);
 
-const $VkPlot = ({ pausePlay }) => (
+const Path = pure(({ vk, pathMaker }) => {
+	let n = 100;
+	let points = range(0, KJ, KJ / n).map(k => ({
+		k,
+		q: vk(k) * k
+	}));
+	return <path d={pathMaker(points)} className={style.line} />;
+});
+
+class QkPlot$ extends PureComponent {
+	componentWillUnmount() {
+		window.removeEventListener("resize", this.resize);
+	}
+
+	componentDidMount() {
+		window.addEventListener("resize", this.resize);
+		this.resize();
+	}
+
+	state = {
+		width: 500,
+		height: 500
+	};
+	resize = () => {
+		this.setState(
+			{
+				width: this.svg.clientWidth - 2 * MAR,
+				height: this.svg.clientHeight - 2 * MAR
+			},
+			() => {
+				let x = getX(this.state.width);
+				let y = getY3(this.state.height);
+				select(this.gTop).call(axisBottom().scale(x));
+				select(this.gLeft).call(axisLeft().scale(y));
+			}
+		);
+	};
+
+	render() {
+		const { width, height } = this.state;
+		const x = getX(width);
+		const y = getY3(height);
+		const pathMaker = getPathMaker2(x, y);
+		return (
+			<div>
+				<svg ref={d => (this.svg = d)} className={style.svg}>
+					<g transform={`translate(${MAR},${MAR})`}>
+						<g ref={d => (this.gTop = d)} transform={`translate(0,${height})`}>
+							<g transform={`translate(${width / 2},-30)`}>
+								<text className={style.axisLabel}>density (veh/km)</text>
+							</g>
+						</g>
+						<g ref={d => (this.gLeft = d)}>
+							<g transform={`translate(-48,${height / 2}) rotate(-90)`}>
+								<text className={style.axisLabel}>flow (veh/hr)</text>
+							</g>
+						</g>
+					</g>
+					<g transform={`translate(${MAR},${MAR})`}>
+						<rect className={style.bg} width={width} height={height} />
+						<Path vk={this.props.vk} pathMaker={pathMaker} />
+					</g>
+				</svg>
+			</div>
+		);
+	}
+}
+
+const QkPlot = connect(state => ({
+	dots: state.dots,
+	vk: getVk(state)
+}))(QkPlot$);
+
+const $Plots = ({ pausePlay }) => (
 	<div className={style.main}>
-		<div className={style.plot}>
-			<Svg />
+		<div className={style.plots}>
+			<VkPlot />
+			<QkPlot />
 		</div>
 		<div style={{ textAlign: "center" }}>
 			<div className={shared.button} onClick={pausePlay}>TOGGLE</div>
@@ -241,14 +319,14 @@ function pausePlay() {
 	};
 }
 
-const VkPlot = connect(null, dispatch => ({
+const Plots = connect(null, dispatch => ({
 	pausePlay() {
 		dispatch(pausePlay());
 	}
-}))($VkPlot);
+}))($Plots);
 
 export default () => (
 	<Provider store={store}>
-		<VkPlot />
+		<Plots />
 	</Provider>
 );

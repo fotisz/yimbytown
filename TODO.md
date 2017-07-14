@@ -1,5 +1,4 @@
-+ start thinking about structure
-
++ add an FD onto the FI visualiation
 
 
 

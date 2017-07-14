@@ -1,6 +1,7 @@
 //@flow
 import React, { Component, PureComponent } from "react";
 import style from "./styleFI.scss";
+import shared from "src/styleShared.scss";
 import { pure } from "recompose";
 import { scaleLinear } from "d3-scale";
 import uniqueId from "lodash/uniqueId";
@@ -12,11 +13,12 @@ import type { DotDatum } from "src/types";
 import { select } from "d3-selection";
 const WIDTH = 500;
 const ROAD_WIDTH = 700;
-const POOL_WIDTH = 200;
+const POOL_WIDTH = 300;
 const HEIGHT = 20;
 const KM = 100;
 const ROAD_HEIGHT = 20;
 const TIME_UNIT = 50;
+// const
 const LANE_LENGTH = 600;
 const QK = k => {
 	if (k <= K0) return k * VF;
@@ -51,14 +53,14 @@ const Pool = pure(({ poolSize }) => {
 	return (
 		<g transform={`translate(${ROAD_WIDTH},0)`}>
 			<rect className={style.pool} width={POOL_WIDTH} height={HEIGHT} />
-			<g transform={`translate(0,${HEIGHT / 2})`}>
+			<g>
 				{range(0, poolSize).map(d => (
 					<rect
-						x={d * 10}
-						y="-2"
+						x={d * 8}
+						y="2"
 						className={style.carExited}
-						width="8"
-						height="4"
+						width="3"
+						height={ROAD_HEIGHT - 4}
 						key={d}
 					/>
 				))}
@@ -89,7 +91,7 @@ class FI extends PureComponent {
 							this.setState(({ poolSize }) => ({
 								poolSize: Math.max(poolSize - 1, 0)
 							}));
-						}, 2000);
+						}, 3000);
 					}
 					return {
 						id: d.id,
@@ -131,8 +133,8 @@ class FI extends PureComponent {
 	};
 	render() {
 		return (
-			<div>
-				<div>
+			<div className={style.main}>
+				<div className={style.row}>
 					<input
 						type="range"
 						onChange={this.onChange}
@@ -141,7 +143,9 @@ class FI extends PureComponent {
 						step="0.5"
 						max={KJ}
 					/>
-					<button onClick={this.pausePlay}>Toggle</button>
+					<div className={shared.button} onClick={this.pausePlay}>
+						{this.state.paused ? "PLAY" : "PAUSE"}
+					</div>
 				</div>
 				<svg width={ROAD_WIDTH + POOL_WIDTH} height={HEIGHT}>
 					<Road cars={this.state.cars} />
@@ -153,10 +157,11 @@ class FI extends PureComponent {
 }
 
 function createCars(k: number): Array<{ id: string, x: number }> {
-	let space = 1000 / k;
+	// let space = 1000 / k;
+	let numCars = Math.floor(LANE_LENGTH / 1000 * k);
 	return range(0, LANE_LENGTH / 1000 * k).map(d => ({
 		id: uniqueId(),
-		x: d * space
+		x: d * LANE_LENGTH / numCars
 	}));
 }
 

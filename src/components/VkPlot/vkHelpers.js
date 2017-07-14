@@ -27,8 +27,15 @@ export const getY = moize(height =>
 export const getY2 = moize(height =>
 	scaleLinear().domain([0, LANE_LENGTH]).range([0, height * 1.2])
 );
+export const getY3 = moize(height =>
+	scaleLinear().domain([0, Q0 * 1.1]).range([height, 0])
+);
 export const getPathMaker = moize((x, y) =>
 	line().x(d => x(d.k)).y(d => y(d.v))
+);
+
+export const getPathMaker2 = moize((x, y) =>
+	line().x(d => x(d.k)).y(d => y(d.q))
 );
 
 const dotsReduce = CR(
@@ -79,14 +86,6 @@ const LANES_INITIAL = range(0, NUM_LANES).map(i => {
 });
 
 const lanesReduce = CR(LANES_INITIAL, {
-	// addCar(lanes, { index }) {
-	// 	return map(lanes, (lane, i) => {
-	// 		if (i !== index) return lane;
-	// 		let cars = lane.cars;
-	// 		let x = 0;
-	// 		return upo(lane, { cars: [makeCar(x), ...cars] });
-	// 	});
-	// },
 	tick(lanes, { dt, vk }) {
 		return map(lanes, ({ cars, k }) => {
 			const v = vk(k);

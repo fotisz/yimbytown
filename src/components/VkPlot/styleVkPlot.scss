@@ -1,17 +1,21 @@
 @import '~material-colors/dist/colors';
 div.main {
-    width: 50%;
-    // height: 400px;
-    min-width: 600px;
+    // width: 70%;
     background-color: white;
-    padding: 50px;
+    padding: 30px;
     box-sizing: border-box;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 
-div.plot{
-    height: 400px;
+div.plots{
+    height: 500px;
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+div.plots > div{
+    flex: 1;
 }
 
 .bg {
