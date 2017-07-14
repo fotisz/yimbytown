@@ -2,8 +2,10 @@ import React from "react";
 import { HashRouter, Route, Link } from "react-router-dom";
 import VkPlot from "components/VkPlot";
 import PDE from "components/PDE";
+import FI from 'components/FI';
 import { app, header, content } from "./styleApp.scss";
 import { button } from "src/styleShared.scss";
+
 
 const Home = () => <div>hello</div>;
 
@@ -20,11 +22,15 @@ export default () => (
 				<Link to="/pde">
 					<div className={button}>LWR</div>
 				</Link>
+				<Link to="/fi">
+					<div className={button}>Fundamental Identity</div>
+				</Link>
 			</div>
 			<div className={content}>
 				<Route exact path="/" component={Home} />
 				<Route path="/vk" component={VkPlot} />
 				<Route path="/pde" component={PDE} />
+				<Route path="/fi" component={FI} />
 			</div>
 		</div>
 	</HashRouter>

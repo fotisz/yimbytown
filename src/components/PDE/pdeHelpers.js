@@ -1,6 +1,6 @@
 import { createReducer as CR } from "redux-create-reducer";
 import { combineReducers } from "redux";
-import { scaleLinear } from "d3-scale";
+import { scaleLinear, scaleSqrt } from "d3-scale";
 import { createSelector } from "reselect";
 import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
@@ -16,7 +16,7 @@ const B0 = LANE_LENGTH * 0.5;
 const B1 = LANE_LENGTH * 0.7;
 export const TIME_UNIT = 30;
 export const colorScale = scaleLinear()
-	.domain([1000 / KJ + 1, 1000 / K0 + 1])
+	.domain([1000 / KJ - 2, 1000 / K0 + 60])
 	.interpolate(interpolateHslLong)
 	.range([colors.deepPurple["a700"], colors.yellow["a200"]])
 	.clamp(true);
@@ -47,13 +47,10 @@ const carsReduce = CR(range(0, 150).map(d => makeCar(d * 1000 / K0, VF)), {
 			if (x <= LANE_LENGTH) res.push({ id, x: x + dt * v });
 		}
 		return res;
-		// return map(cars, ({ id, x }, i, z) => {
-		// 	return { id, x: x + dt * v, v };
-		// }).filter(d => d.x < LANE_LENGTH * 1.05);
 	},
 	add(cars) {
 		if (cars[0] && cars[0].x < 1000 / KJ) return cars;
-		let s = cars[0] ? cars[0].x : 1e5;
+		let s = cars[0].x;
 		let v = VS(s);
 		return [makeCar(0, v), ...cars];
 	}

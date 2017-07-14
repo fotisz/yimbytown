@@ -4,33 +4,43 @@ import style from "./styleFI.scss";
 import { pure } from "recompose";
 import { scaleLinear } from "d3-scale";
 import uniqueId from "lodash/uniqueId";
-import { timer,timerFlush, timeout, interval } from "d3-timer";
+import { timer, timerFlush, timeout, interval } from "d3-timer";
 import range from "lodash/range";
 import map from "lodash/map";
-import { KJ, VF } from "constants";
+import { KJ, VF, K0, Q0, W } from "constants";
 import type { DotDatum } from "src/types";
-import { line, curveCatmullRom } from "d3-shape";
-import { axisLeft, axisBottom } from "d3-axis";
 import { select } from "d3-selection";
 const WIDTH = 500;
-const ROAD_WIDTH = 300;
+const ROAD_WIDTH = 700;
 const POOL_WIDTH = 200;
 const HEIGHT = 20;
 const KM = 100;
+const ROAD_HEIGHT = 20;
+const TIME_UNIT = 50;
+const LANE_LENGTH = 600;
+const QK = k => {
+	if (k <= K0) return k * VF;
+	if (k < KJ) return Q0 - W * (k - K0);
+	return 0;
+};
+
+const VS = s => QK(1000 / s) * s / 3600; //m/s
+
+const xScale = scaleLinear().domain([0, LANE_LENGTH]).range([0, ROAD_WIDTH]);
 
 const Road = pure(({ cars }) => (
 	<g>
 		<rect className={style.lane} width={ROAD_WIDTH} height={HEIGHT} />
-		<g transform={`translate(0,${HEIGHT / 2})`}>
+		<g>
 			{map(cars, d => (
 				<rect
-					width="8"
-					height="4"
+					width="3"
+					height={ROAD_HEIGHT - 4}
 					x="-4"
-					y="-2"
+					y="2"
 					key={d.id}
 					className={style.car}
-					transform={`translate(${d.x},0)`}
+					transform={`translate(${xScale(d.x)},0)`}
 				/>
 			))}
 		</g>
@@ -64,16 +74,16 @@ class FI extends PureComponent {
 		let last = 0;
 		let z = 0;
 		this.timer = timer(elapsed => {
-			const δ = (elapsed - last) / 75;
+			const δ = (elapsed - last) / TIME_UNIT;
 			last = elapsed;
-			let v = this.props.scale(this.state.k);
-			let cars = this.state.cars.filter(d => d.x < ROAD_WIDTH);
+			let v = VS(1000 / this.state.k);
+			let cars = this.state.cars.filter(d => d.x < LANE_LENGTH);
 			this.setState(({ cars, poolSize }) => {
 				cars = map(cars, d => {
 					let newX = d.x + δ * v;
 
-					if (newX > ROAD_WIDTH) {
-						newX -= ROAD_WIDTH;
+					if (newX > LANE_LENGTH) {
+						newX -= LANE_LENGTH;
 						poolSize = poolSize + 1;
 						timeout(() => {
 							this.setState(({ poolSize }) => ({
@@ -83,7 +93,7 @@ class FI extends PureComponent {
 					}
 					return {
 						id: d.id,
-						x: (d.x + δ * v) % ROAD_WIDTH
+						x: (d.x + δ * v) % LANE_LENGTH
 					};
 				});
 
@@ -143,15 +153,13 @@ class FI extends PureComponent {
 }
 
 function createCars(k: number): Array<{ id: string, x: number }> {
-	let space = KM / k;
-	return range(0, ROAD_WIDTH / KM * k).map(d => ({
+	let space = 1000 / k;
+	return range(0, LANE_LENGTH / 1000 * k).map(d => ({
 		id: uniqueId(),
 		x: d * space
 	}));
 }
 
-const scale = scaleLinear().domain([0, KJ]).range([VF, 0]);
-
-const App = () => <FI scale={scale} />;
+const App = () => <FI />;
 
 export default App;
