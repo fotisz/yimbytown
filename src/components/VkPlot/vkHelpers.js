@@ -10,7 +10,7 @@ import moize from "moize";
 import { line } from "d3-shape";
 import { KJ, VF, K0, Q0, W } from "constants";
 
-export const NUM_LANES = 10;
+export const NUM_LANES = 12;
 export const TIME_UNIT = 200;
 export const LANE_LENGTH = 200; //meters
 

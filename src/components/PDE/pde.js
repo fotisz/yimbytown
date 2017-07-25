@@ -18,7 +18,7 @@ import map from "lodash/map";
 import uniqueId from "lodash/uniqueId";
 import thunk from "redux-thunk";
 
-const ROAD_HEIGHT = 20, MAR = 0;
+const ROAD_HEIGHT = 40, MAR = 0;
 
 function trans(x, y) {
 	return `translate(${x},${y})`;

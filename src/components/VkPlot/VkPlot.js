@@ -41,9 +41,9 @@ const Lane = pure(({ height, k, x, cars }) => {
 				<rect
 					key={d.id}
 					x="2"
-					y="-8"
+					y="-10"
 					width="4"
-					height="8"
+					height="10"
 					className={style.car}
 					transform={`translate(0,${y(d.x)})`}
 				/>
@@ -157,12 +157,12 @@ class VkPlot$ extends Component {
 					</defs>
 					<g transform={`translate(${MAR},${MAR})`}>
 						<g ref={d => (this.gTop = d)} transform={`translate(0,${height})`}>
-							<g transform={`translate(${width / 2},-30)`}>
+							<g transform={`translate(${width / 2},35)`}>
 								<text className={style.axisLabel}>density (veh/km)</text>
 							</g>
 						</g>
 						<g ref={d => (this.gLeft = d)}>
-							<g transform={`translate(-35,${height / 2}) rotate(-90)`}>
+							<g transform={`translate(-40,${height / 2}) rotate(-90)`}>
 								<text className={style.axisLabel}>speed (km/hr)</text>
 							</g>
 						</g>
@@ -231,6 +231,7 @@ class QkPlot$ extends PureComponent {
 		width: 500,
 		height: 500
 	};
+
 	resize = () => {
 		this.setState(
 			{
@@ -256,7 +257,7 @@ class QkPlot$ extends PureComponent {
 				<svg ref={d => (this.svg = d)} className={style.svg}>
 					<g transform={`translate(${MAR},${MAR})`}>
 						<g ref={d => (this.gTop = d)} transform={`translate(0,${height})`}>
-							<g transform={`translate(${width / 2},-30)`}>
+							<g transform={`translate(${width / 2},35)`}>
 								<text className={style.axisLabel}>density (veh/km)</text>
 							</g>
 						</g>

@@ -10,7 +10,7 @@ import { interpolateHcl, interpolateHslLong } from "d3-interpolate";
 import colors from "material-colors";
 export const CANVAS_HEIGHT = 1e4;
 const LANE_LENGTH = 4000;
-export const WIDTH = 1100;
+export const WIDTH = 1200;
 // export const HEIGHT = 900;
 const B0 = LANE_LENGTH * 0.5;
 const B1 = LANE_LENGTH * 0.7;

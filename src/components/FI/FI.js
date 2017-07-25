@@ -11,15 +11,15 @@ import map from "lodash/map";
 import { KJ, VF, K0, Q0, W } from "constants";
 import type { DotDatum } from "src/types";
 import { select } from "d3-selection";
-const WIDTH = 500;
-const ROAD_WIDTH = 700;
+const WIDTH = 1200;
+const ROAD_WIDTH = 1200;
 const POOL_WIDTH = 300;
 const HEIGHT = 20;
 const KM = 100;
-const ROAD_HEIGHT = 20;
+const ROAD_HEIGHT = 50;
 const TIME_UNIT = 50;
 // const
-const LANE_LENGTH = 600;
+const LANE_LENGTH = 1200;
 const QK = k => {
 	if (k <= K0) return k * VF;
 	if (k < KJ) return Q0 - W * (k - K0);
@@ -32,7 +32,7 @@ const xScale = scaleLinear().domain([0, LANE_LENGTH]).range([0, ROAD_WIDTH]);
 
 const Road = pure(({ cars }) => (
 	<g>
-		<rect className={style.lane} width={ROAD_WIDTH} height={HEIGHT} />
+		<rect className={style.lane} width={ROAD_WIDTH} height={ROAD_HEIGHT} />
 		<g>
 			{map(cars, d => (
 				<rect
@@ -52,7 +52,7 @@ const Road = pure(({ cars }) => (
 const Pool = pure(({ poolSize }) => {
 	return (
 		<g transform={`translate(${ROAD_WIDTH},0)`}>
-			<rect className={style.pool} width={POOL_WIDTH} height={HEIGHT} />
+			<rect className={style.pool} width={POOL_WIDTH} height={ROAD_HEIGHT} />
 			<g>
 				{range(0, poolSize).map(d => (
 					<rect
@@ -150,7 +150,7 @@ class FI extends PureComponent {
 						{this.state.paused ? "PLAY" : "PAUSE"}
 					</div>
 				</div>
-				<svg width={ROAD_WIDTH + POOL_WIDTH} height={HEIGHT}>
+				<svg width={ROAD_WIDTH + POOL_WIDTH} height={ROAD_HEIGHT}>
 					<Road cars={this.state.cars} />
 					<Pool poolSize={this.state.poolSize} />
 				</svg>

@@ -131,15 +131,15 @@ const Home = () => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 
 
 
-const WIDTH = 500;
-const ROAD_WIDTH = 700;
+const WIDTH = 1200;
+const ROAD_WIDTH = 1200;
 const POOL_WIDTH = 300;
 const HEIGHT = 20;
 const KM = 100;
-const ROAD_HEIGHT = 20;
+const ROAD_HEIGHT = 50;
 const TIME_UNIT = 50;
 // const
-const LANE_LENGTH = 600;
+const LANE_LENGTH = 1200;
 const QK = k => {
 	if (k <= __WEBPACK_IMPORTED_MODULE_9_constants__["a" /* K0 */]) return k * __WEBPACK_IMPORTED_MODULE_9_constants__["b" /* VF */];
 	if (k < __WEBPACK_IMPORTED_MODULE_9_constants__["c" /* KJ */]) return __WEBPACK_IMPORTED_MODULE_9_constants__["d" /* Q0 */] - __WEBPACK_IMPORTED_MODULE_9_constants__["e" /* W */] * (k - __WEBPACK_IMPORTED_MODULE_9_constants__["a" /* K0 */]);
@@ -153,7 +153,7 @@ const xScale = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_d3_scale__["a" 
 const Road = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_recompose__["a" /* pure */])(({ cars }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 	"g",
 	null,
-	__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("rect", { className: __WEBPACK_IMPORTED_MODULE_1__styleFI_scss___default.a.lane, width: ROAD_WIDTH, height: HEIGHT }),
+	__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("rect", { className: __WEBPACK_IMPORTED_MODULE_1__styleFI_scss___default.a.lane, width: ROAD_WIDTH, height: ROAD_HEIGHT }),
 	__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 		"g",
 		null,
@@ -173,7 +173,7 @@ const Pool = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_recompose__["a" /
 	return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 		"g",
 		{ transform: `translate(${ROAD_WIDTH},0)` },
-		__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("rect", { className: __WEBPACK_IMPORTED_MODULE_1__styleFI_scss___default.a.pool, width: POOL_WIDTH, height: HEIGHT }),
+		__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("rect", { className: __WEBPACK_IMPORTED_MODULE_1__styleFI_scss___default.a.pool, width: POOL_WIDTH, height: ROAD_HEIGHT }),
 		__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 			"g",
 			null,
@@ -236,7 +236,7 @@ class FI extends __WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"] {
 			),
 			__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 				"svg",
-				{ width: ROAD_WIDTH + POOL_WIDTH, height: HEIGHT },
+				{ width: ROAD_WIDTH + POOL_WIDTH, height: ROAD_HEIGHT },
 				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Road, { cars: this.state.cars }),
 				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Pool, { poolSize: this.state.poolSize })
 			)
@@ -370,7 +370,7 @@ const App = () => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(FI
 
 
 
-const ROAD_HEIGHT = 20,
+const ROAD_HEIGHT = 40,
       MAR = 0;
 
 function trans(x, y) {
@@ -559,7 +559,7 @@ const CANVAS_HEIGHT = 1e4;
 /* harmony export (immutable) */ __webpack_exports__["c"] = CANVAS_HEIGHT;
 
 const LANE_LENGTH = 4000;
-const WIDTH = 1100;
+const WIDTH = 1200;
 /* harmony export (immutable) */ __webpack_exports__["d"] = WIDTH;
 
 // export const HEIGHT = 900;
@@ -809,7 +809,7 @@ class VkPlot$ extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 						{ ref: d => this.gTop = d, transform: `translate(0,${height})` },
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							"g",
-							{ transform: `translate(${width / 2},-30)` },
+							{ transform: `translate(${width / 2},35)` },
 							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 								"text",
 								{ className: __WEBPACK_IMPORTED_MODULE_1__styleVkPlot_scss___default.a.axisLabel },
@@ -822,7 +822,7 @@ class VkPlot$ extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 						{ ref: d => this.gLeft = d },
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							"g",
-							{ transform: `translate(-35,${height / 2}) rotate(-90)` },
+							{ transform: `translate(-40,${height / 2}) rotate(-90)` },
 							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 								"text",
 								{ className: __WEBPACK_IMPORTED_MODULE_1__styleVkPlot_scss___default.a.axisLabel },
@@ -926,7 +926,7 @@ class QkPlot$ extends __WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"] {
 						{ ref: d => this.gTop = d, transform: `translate(0,${height})` },
 						__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 							"g",
-							{ transform: `translate(${width / 2},-30)` },
+							{ transform: `translate(${width / 2},35)` },
 							__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 								"text",
 								{ className: __WEBPACK_IMPORTED_MODULE_1__styleVkPlot_scss___default.a.axisLabel },
@@ -1241,7 +1241,7 @@ exports = module.exports = __webpack_require__(34)(undefined);
 
 
 // module
-exports.push([module.i, "div.styleFI__main___1BcC8 {\n  display: inline-block;\n  background-color: white;\n  padding: 40px;\n  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12); }\n\n.styleFI__car___2oCWN {\n  fill: #03a9f4;\n  rx: 1px;\n  ry: 1px; }\n\n.styleFI__row___35Zie {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-around;\n  margin-bottom: 20px; }\n\n.styleFI__lane___2QtRt {\n  fill: #cfd8dc;\n  opacity: .7;\n  pointer-events: none; }\n\n.styleFI__pool___26DqO {\n  fill: #eeeeee;\n  pointer-events: none; }\n\n.styleFI__carExited___2kMc4 {\n  fill: #e91e63;\n  rx: 1px;\n  ry: 1px; }\n", ""]);
+exports.push([module.i, "div.styleFI__main___1BcC8 {\n  display: inline-block;\n  background-color: white;\n  padding: 40px;\n  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12); }\n\n.styleFI__car___2oCWN {\n  fill: #03a9f4;\n  rx: 1px;\n  ry: 1px; }\n\n.styleFI__row___35Zie {\n  display: flex;\n  flex-direction: row;\n  justify-content: space-around;\n  margin-bottom: 20px; }\n\n.styleFI__lane___2QtRt {\n  fill: #b0bec5;\n  opacity: .7;\n  pointer-events: none; }\n\n.styleFI__pool___26DqO {\n  fill: #e0e0e0;\n  pointer-events: none; }\n\n.styleFI__carExited___2kMc4 {\n  fill: #e91e63;\n  rx: 1px;\n  ry: 1px; }\n", ""]);
 
 // exports
 exports.locals = {
@@ -1263,7 +1263,7 @@ exports = module.exports = __webpack_require__(34)(undefined);
 
 
 // module
-exports.push([module.i, "div.stylePde__plot___8yRlm {\n  background-color: white;\n  padding: 20px;\n  display: inline-block;\n  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12); }\n\n.stylePde__bg___3Cdnl {\n  fill: #f5f5f5; }\n\n.stylePde__buttonRow___2B3vm {\n  margin-bottom: 10px;\n  display: flex;\n  justify-content: space-around; }\n\n.stylePde__car___gwQfz {\n  fill: #03a9f4;\n  rx: 1px;\n  ry: 1px; }\n\n.stylePde__road___30qU4 {\n  fill: #cfd8dc;\n  opacity: .7;\n  pointer-events: none;\n  stroke: none; }\n\n.stylePde__button___xhhjU {\n  padding: 14px;\n  background-color: #f5f5f5;\n  width: auto;\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  outline: none;\n  text-align: center; }\n", ""]);
+exports.push([module.i, "div.stylePde__plot___8yRlm {\n  height: 800px;\n  background-color: white;\n  padding: 20px;\n  display: inline-block;\n  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12); }\n\n.stylePde__bg___3Cdnl {\n  fill: #f5f5f5; }\n\n.stylePde__buttonRow___2B3vm {\n  margin-bottom: 10px;\n  display: flex; }\n\n.stylePde__car___gwQfz {\n  fill: #0288d1;\n  rx: 1px;\n  ry: 1px; }\n\n.stylePde__road___30qU4 {\n  fill: #cfd8dc;\n  opacity: .7;\n  pointer-events: none;\n  stroke: none; }\n\n.stylePde__button___xhhjU {\n  padding: 14px;\n  background-color: #f5f5f5;\n  width: auto;\n  position: relative;\n  display: inline-block;\n  cursor: pointer;\n  outline: none;\n  text-align: center; }\n", ""]);
 
 // exports
 exports.locals = {

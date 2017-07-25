@@ -2,7 +2,7 @@
 div.plot {
     // width: 50%;
     // overflow-y: scroll;
-    // height: 400px;
+    height: 800px;
     background-color: white;
     padding: 20px;
     display: inline-block;
@@ -22,11 +22,11 @@ div.plot {
 .buttonRow{
     margin-bottom: 10px;
     display: flex;
-    justify-content: space-around;
+    // justify-content: space-around;
 }
 
 .car {
-    fill: $md-light-blue-500;
+    fill: $md-light-blue-700;
     rx: 1px;
     ry: 1px;
 }
