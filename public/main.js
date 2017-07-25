@@ -696,9 +696,9 @@ const Lane = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3_recompose__["a" /
 		cars.map(d => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("rect", {
 			key: d.id,
 			x: "2",
-			y: "-8",
+			y: "-10",
 			width: "4",
-			height: "8",
+			height: "10",
 			className: __WEBPACK_IMPORTED_MODULE_1__styleVkPlot_scss___default.a.car,
 			transform: `translate(0,${y(d.x)})`
 		}))
@@ -1069,7 +1069,7 @@ const Plots = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_15_react_redux__["
 
 
 
-const NUM_LANES = 10;
+const NUM_LANES = 12;
 /* unused harmony export NUM_LANES */
 
 const TIME_UNIT = 200;

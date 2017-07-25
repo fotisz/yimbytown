@@ -21,6 +21,10 @@ module.exports = {
     new webpack.optimize.CommonsChunkPlugin({
       name: "manifest"
     }),
+    // new HtmlWebpackPlugin({
+    //   title: "How Traffic Works, for 2017 Yimbytown",
+    //   filename: "index.html"
+    // })
     new HtmlWebpackPlugin({
       template: resolve(__dirname, "src", "index.html")
     })
